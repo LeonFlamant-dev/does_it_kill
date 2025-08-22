@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>taticus does it kill</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+<style>
+	body, html {
+	height: 100%;
+	margin: 0;
+	}
+	.main-container {
+	display: flex;
+	flex-direction: column;
+	height: 100vh;
+	}
+	.top-buttons {
+	flex: 0 0 auto;
+	display: flex;
+	justify-content: center;
+	gap: 1rem;
+	padding: 1rem;
+	background: #f8f9fa;
+	border-bottom: 1px solid #ccc;
+	}
+	.center-area {
+	flex: 1 1 auto;
+	position: relative;  /* allows absolute positioning of images */
+	background: #eee;
+	/* background: url("img/background.jpg") no-repeat center center;
+	background-size: cover; */
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	}
+	.center-area h1 {
+	color: #333;
+	}
+	.clickable-img {
+	position: absolute;
+	width: 120px;
+	height: auto;
+	cursor: pointer;
+	transition: transform 0.2s;
+	}
+	.clickable-img:hover {
+	transform: scale(1.05);
+	}
+	.bottom-left {
+	bottom: 100px;
+	left: 100px;
+	}
+	.bottom-left-panel {
+	bottom: 70px;
+	left: 300px;
+	}
+	.top-right {
+	top: 100px;
+	right: 100px;
+	}
+
+	/* Stats panel */
+	.stats-panel {
+	position: absolute;
+	width: 280px;
+	padding: 15px;
+	background: white;
+	border-left: 1px solid #ccc;
+	box-shadow: -2px 0 6px rgba(0,0,0,0.1);
+	display: none; /* hidden until image click */
+	}
+	.stats-line {
+	margin: 5px 0;
+	font-weight: bold;
+	}
+	.stats-images {
+	margin-top: 15px;
+	}
+	.stat-with-number {
+	display: flex;
+	align-items: center;
+	margin-bottom: 10px;
+	}
+	.stat-with-number img {
+	width: 50px;
+	margin-right: 10px;
+	}
+	.stat-number {
+	font-size: 18px;
+	font-weight: bold;
+	color: #007bff;
+	}
+	.stats-images img {
+	width: 50px;
+	margin-right: 10px;
+	}
+</style>
+</head>
+<body>
+
+<div class="main-container">
+	
+	<!-- Top Buttons -->
+	<div class="top-buttons">
+	<button class="btn btn-primary">Button 1</button>
+	<button class="btn btn-success">Button 2</button>
+	<button class="btn btn-danger">Button 3</button>
+	</div>
+
+	<!-- Center Area -->
+	<div class="center-area">
+	<h1>Main Content Area</h1>
+
+	<!-- Bottom-left image -->
+	<img id="bottom-left-icon" src="img/perso/noperso/icon.png" alt="Left Image" class="clickable-img bottom-left" onclick="showDropdown()">
+
+
+	<!-- Top-right image -->
+	<a href="right.php">
+		<img src="img/perso/noperso/icon.png" alt="Right Image" class="clickable-img top-right">
+	</a>
+	</div>
+
+
+	<!-- Menu déroulant (caché par défaut) -->
+	<div id="dropdownMenu" style="display:none; position:absolute; bottom:140px; left:10px; background:white; border:1px solid #ccc; padding:5px; border-radius:5px;">
+	<select id="menuSelect" onchange="showStats()">
+		<option value="">-- Choisir un personnage --</option>
+	</select>
+	</div>
+
+	<!-- Stats panel -->
+	<div id="statsPanel" class="stats-panel bottom-left-panel">
+		<div class="stats-line" id="hp_id">200</div>
+		<div class="stats-line" id="armor_id">50</div>
+		<div class="stats-line" id="dmg_id">110</div>
+
+		<!-- Images with number on the right of first -->
+		<div class="stats-images">
+		<div class="stat-with-number">
+			<img id="attack-mele-img" src="small1.png" alt="Small 1">
+			<span class="stat-number">1</span>
+		</div>
+		<div class="stat-with-number">
+			<img id="attack-range-img" src="small1.png" alt="Small 1">
+			<span class="stat-number">4</span>
+		</div>
+		<img id="active-img" src="small2.png" alt="Small 2">
+		<img id="passive-img" src="small3.png" alt="Small 3">
+		</div>
+	</div>
+</div>
+
+<script>
+
+	async function loadMenuOptions() {
+		let response = await fetch("mysqli/get_perso.php");
+		let perso = await response.json();
+
+		let select = document.getElementById("menuSelect");
+		select.innerHTML = '<option value="">-- Choisir un personnage --</option>';
+
+		perso.forEach(c => {
+			let option = document.createElement("option");
+			option.value = c.nom;
+			option.textContent = c.prettyname;
+			select.appendChild(option);
+		});
+	}
+
+	function showDropdown() {
+		document.getElementById("dropdownMenu").style.display = "none";
+		document.getElementById("dropdownMenu").style.display = "block";
+	}
+
+	async function showStats() {
+	const perso_id = document.getElementById("menuSelect").value;
+	if (perso_id) {
+
+			let response = await fetch("mysqli/get_perso_stat.php?id=" + perso_id);
+			let data = await response.json();
+			console.log(data);
+
+		document.getElementById("statsPanel").style.display = "block";
+		document.getElementById("dropdownMenu").style.display = "none";
+
+		document.getElementById("bottom-left-icon").src = "img/perso/" + data.nom + "/icon.png";
+
+		// document.getElementById("attack-img").src = "img/" + val + "/img1.png";
+		document.getElementById("active-img").src = "img/perso/" + data.nom + "/active.png";
+		document.getElementById("passive-img").src = "img/perso/" + data.nom + "/passive.png";
+
+		if(data.nbr_hit_range != 0){
+			document.getElementById("attack-range-img").src = "img/perfo/" + data.perfo_range + ".png";
+			// todo changer le nombre
+			// todo si 0 cacher l'image
+		}
+		
+		document.getElementById("attack-mele-img").src = "img/perfo/" + data.perfo_mele + ".png";
+			// todo changer le nombre
+
+
+		// exemple : tu peux aussi changer le nombre
+		// document.getElementById("num1").innerText = 2;
+	}
+	}
+
+	document.getElementById("dropdownMenu").addEventListener("click", loadMenuOptions);
+</script>
+
+</body>
+</html>

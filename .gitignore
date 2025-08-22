@@ -1,0 +1,12 @@
+cp.txt
+
+# IDE / OS files
+.vscode/
+*.swp
+.DS_Store
+
+# Fichiers temporaires
+*.log
+*.tmp
+
+index2.html
