@@ -131,7 +131,7 @@
 	</div>
 
 	<!-- Menu déroulant selection palier (caché par défaut) -->
-	<div id="dropdownMenu_palier" style="display:none; position:absolute; bottom:140px; left:110px; background:white; border:1px solid #ccc; padding:5px; border-radius:5px;">
+	<div id="dropdownMenu_palier" style="display:none; position:absolute; bottom:100px; left:30px; background:white; border:1px solid #ccc; padding:5px; border-radius:5px;">
 	<select id="menuSelect_palier" onchange="showStats()">
 		<option value="">-- Choisir un palier --</option>
 	</select>
@@ -146,15 +146,15 @@
 		<!-- Images with number on the right of first -->
 		<div class="stats-images">
 		<div class="stat-with-number">
-			<img id="attack-mele-img" src="small1.png" alt="Small 1">
-			<span class="stat-number">1</span>
+			<img id="attack-mele-img"  alt="Small 1">
+			<span id="attack-mele-nbr" class="stat-number">0</span>
 		</div>
 		<div class="stat-with-number">
-			<img id="attack-range-img" src="small1.png" alt="Small 1">
-			<span class="stat-number">4</span>
+			<img id="attack-range-img" alt="Small 1">
+			<span id="attack-range-nbr" class="stat-number">0</span>
 		</div>
-		<img id="active-img" src="small2.png" alt="Small 2">
-		<img id="passive-img" src="small3.png" alt="Small 3">
+		<img id="active-img"  alt="Small 2">
+		<img id="passive-img"  alt="Small 3">
 		</div>
 	</div>
 </div>
@@ -163,39 +163,42 @@
 
 	async function loadMenuOptions() {
 		// menu perso
-		let response = await fetch("mysqli/get_perso.php");
-		let perso = await response.json();
+		let response_perso = await fetch("mysqli/get_perso.php");
+		let perso = await response_perso.json();
 
-		let select = document.getElementById("menuSelect_perso");
-		select.innerHTML = '<option value="">-- Choisir un personnage --</option>';
+		let select_perso = document.getElementById("menuSelect_perso");
+		select_perso.innerHTML = '<option value="">-- Choisir un personnage --</option>';
 
 		perso.forEach(c => {
 			let option = document.createElement("option");
 			option.value = c.nom;
 			option.textContent = c.prettyname;
-			select.appendChild(option);
+			select_perso.appendChild(option);
 		});
 
 		// menu palier
-		let response2 = await fetch("mysqli/get_palier.php");
-		let palier = await response2.json();
+		let response_palier = await fetch("mysqli/get_palier.php");
+		let palier = await response_palier.json();
 
-		let select2 = document.getElementById("menuSelect_palier");
-		select2.innerHTML = '<option value="">-- Choisir un personnage --</option>';
+		let select_palier = document.getElementById("menuSelect_palier");
+		select_palier.innerHTML = '<option value="">-- Choisir un palier --</option>';
 
 		palier.forEach(c => {
 			let option = document.createElement("option");
-			option.value = c.nom;
-			option.textContent = c.prettyname;
-			select.appendChild(option);
+			option.value = c.palier;
+			option.textContent = c.palier;
+			select_palier.appendChild(option);
 		});
 	}
 
 	
 
 	function showDropdown() {
-		document.getElementById("dropdownMenu").style.display = "none";
-		document.getElementById("dropdownMenu").style.display = "block";
+		document.getElementById("dropdownMenu_perso").style.display = "none";
+		document.getElementById("dropdownMenu_perso").style.display = "block";
+
+		document.getElementById("dropdownMenu_palier").style.display = "none";
+		document.getElementById("dropdownMenu_palier").style.display = "block";
 	}
 
 	async function showStats() {
@@ -203,35 +206,46 @@
 	const palier_nom = document.getElementById("menuSelect_palier").value;
 	if (perso_nom && palier_nom) {
 
-			let response = await fetch("mysqli/get_perso_stat.php?nom=" + perso_nom+"&palier=" + palier_nom);
-			let data = await response.json();
-			console.log(data);
+		let response = await fetch("mysqli/get_perso_stat.php?nom=" + perso_nom+"&palier=" + palier_nom);
+		let data = await response.json();
+		console.log(data);
 
+		// afficher le panel et cacher les dropdowns
 		document.getElementById("statsPanel").style.display = "block";
-		document.getElementById("dropdownMenu").style.display = "none";
+		// document.getElementById("dropdownMenu_perso").style.display = "none";
+		// document.getElementById("dropdownMenu_palier").style.display = "none";
 
+		// images
+		// icon
 		document.getElementById("bottom-left-icon").src = "img/perso/" + data.nom + "/icon.png";
-
-		// document.getElementById("attack-img").src = "img/" + val + "/img1.png";
+		// active et passive
 		document.getElementById("active-img").src = "img/perso/" + data.nom + "/active.png";
 		document.getElementById("passive-img").src = "img/perso/" + data.nom + "/passive.png";
 
+		// attaques
+		// si nbr_hit_range = 0 alors on n'affiche pas l'attaque
 		if(data.nbr_hit_range != 0){
 			document.getElementById("attack-range-img").src = "img/perfo/" + data.perfo_range + ".png";
-			// todo changer le nombre
-			// todo si 0 cacher l'image
+			document.getElementById("attack-range-nbr").innerText = data.nbr_hit_range;
 		}
-		
+		else{
+			document.getElementById("attack-range-img").style.display = "none";
+			document.getElementById("attack-range-nbr").style.display = "none";
+		}
 		document.getElementById("attack-mele-img").src = "img/perfo/" + data.perfo_mele + ".png";
-			// todo changer le nombre
+		document.getElementById("attack-mele-nbr").innerText = data.nbr_hit_mele;
 
 
-		// exemple : tu peux aussi changer le nombre
-		// document.getElementById("num1").innerText = 2;
+		// stats
+		document.getElementById("hp_id").innerHTML = '<img src="img/hp_noir.png" alt="hp" style="height:16px; vertical-align:middle;"> '+ data.hp;
+		document.getElementById("armor_id").innerHTML = '<img src="img/armor_noir.png" alt="armor" style="height:16px; vertical-align:middle;"> '+ data.armor;
+		document.getElementById("dmg_id").innerHTML = '<img src="img/dmg_noir.png" alt="dmg" style="height:16px; vertical-align:middle;"> '+ data.dmg;
+
 	}
 	}
 
-	document.getElementById("dropdownMenu").addEventListener("click", loadMenuOptions);
+	document.getElementById("bottom-left-icon").addEventListener("click", loadMenuOptions);
+
 </script>
 
 </body>
