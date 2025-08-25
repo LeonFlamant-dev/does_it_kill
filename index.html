@@ -70,6 +70,14 @@
 		box-shadow: -2px 0 6px rgba(0,0,0,0.1);
 		display: none;
 	}
+	.stats-row {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+	}
+	.panel-icon {
+		height: 30px;
+	}
 	.stats-line {
 		margin: 5px 0;
 		color: #ffffff;
@@ -156,7 +164,10 @@
 
 	<!-- Stats panel -->
 	<div id="statsPanel" class="stats-panel bottom-left-panel">
-		<div class="stats-line" id="hp_id">0</div>
+		<div class="stats-row">
+			<div class="stats-line" id="hp_id">0</div>
+			<img id="palier_img" alt="icon" class="panel-icon">
+		</div>
 		<div class="stats-line" id="armor_id">0</div>
 		<div class="stats-line" id="dmg_id">0</div>
 
@@ -262,6 +273,7 @@
 		document.getElementById("attack-mele-img").src = "img/perfo/" + data.perfo_mele + ".png";
 		document.getElementById("attack-mele-nbr").innerText = data.nbr_hit_mele;
 
+		document.getElementById("palier_img").src = "img/palier/" + palier_nom + ".png";
 
 		// stats
 		document.getElementById("hp_id").innerHTML = '<img src="img/stat/hp_noir.png" alt="hp" style="height:20px; vertical-align:middle;"> '+ data.hp;
