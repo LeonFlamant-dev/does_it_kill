@@ -123,10 +123,17 @@
 	</div>
 
 
-	<!-- Menu déroulant (caché par défaut) -->
-	<div id="dropdownMenu" style="display:none; position:absolute; bottom:140px; left:10px; background:white; border:1px solid #ccc; padding:5px; border-radius:5px;">
-	<select id="menuSelect" onchange="showStats()">
+	<!-- Menu déroulant selection perso (caché par défaut) -->
+	<div id="dropdownMenu_perso" style="display:none; position:absolute; bottom:140px; left:10px; background:white; border:1px solid #ccc; padding:5px; border-radius:5px;">
+	<select id="menuSelect_perso" onchange="showStats()">
 		<option value="">-- Choisir un personnage --</option>
+	</select>
+	</div>
+
+	<!-- Menu déroulant selection palier (caché par défaut) -->
+	<div id="dropdownMenu_palier" style="display:none; position:absolute; bottom:140px; left:110px; background:white; border:1px solid #ccc; padding:5px; border-radius:5px;">
+	<select id="menuSelect_palier" onchange="showStats()">
+		<option value="">-- Choisir un palier --</option>
 	</select>
 	</div>
 
@@ -155,10 +162,11 @@
 <script>
 
 	async function loadMenuOptions() {
+		// menu perso
 		let response = await fetch("mysqli/get_perso.php");
 		let perso = await response.json();
 
-		let select = document.getElementById("menuSelect");
+		let select = document.getElementById("menuSelect_perso");
 		select.innerHTML = '<option value="">-- Choisir un personnage --</option>';
 
 		perso.forEach(c => {
@@ -167,7 +175,23 @@
 			option.textContent = c.prettyname;
 			select.appendChild(option);
 		});
+
+		// menu palier
+		let response2 = await fetch("mysqli/get_palier.php");
+		let palier = await response2.json();
+
+		let select2 = document.getElementById("menuSelect_palier");
+		select2.innerHTML = '<option value="">-- Choisir un personnage --</option>';
+
+		palier.forEach(c => {
+			let option = document.createElement("option");
+			option.value = c.nom;
+			option.textContent = c.prettyname;
+			select.appendChild(option);
+		});
 	}
+
+	
 
 	function showDropdown() {
 		document.getElementById("dropdownMenu").style.display = "none";
@@ -175,10 +199,11 @@
 	}
 
 	async function showStats() {
-	const perso_id = document.getElementById("menuSelect").value;
-	if (perso_id) {
+	const perso_nom = document.getElementById("menuSelect_perso").value;
+	const palier_nom = document.getElementById("menuSelect_palier").value;
+	if (perso_nom && palier_nom) {
 
-			let response = await fetch("mysqli/get_perso_stat.php?id=" + perso_id);
+			let response = await fetch("mysqli/get_perso_stat.php?nom=" + perso_nom+"&palier=" + palier_nom);
 			let data = await response.json();
 			console.log(data);
 

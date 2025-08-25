@@ -12,7 +12,7 @@ if (mysqli_connect_errno()) {
 	die("Erreur connexion: " . mysqli_connect_error());
 }
 
-$result = mysqli_query($mysqli, "SELECT id, nom, nbr_hit_mele, perfo_mele, nbr_hit_range, perfo_range, stat_iron, item1, item2, item3, traits, faction FROM personnage WHERE nom =".$_GET['id']);
+$result = mysqli_query($mysqli, "SELECT id, nom, nbr_hit_mele, perfo_mele, nbr_hit_range, perfo_range, item1, item2, item3, traits, faction, perso_stat.hp as hp, perso_stat.armor as armor, perso_stat.dmg as dmg FROM personnage left join perso_stat on nom = '".$_GET['nom']."' AND palier = '".$_GET['palier']."' WHERE nom ='".$_GET['nom']."';");
 
 
 while ($row = mysqli_fetch_assoc($result)) {
