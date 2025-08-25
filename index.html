@@ -7,94 +7,109 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
 <style>
 	body, html {
-	height: 100%;
-	margin: 0;
+		height: 100%;
+		margin: 0;
 	}
 	.main-container {
-	display: flex;
-	flex-direction: column;
-	height: 100vh;
+		display: flex;
+		flex-direction: column;
+		height: 100vh;
 	}
 	.top-buttons {
-	flex: 0 0 auto;
-	display: flex;
-	justify-content: center;
-	gap: 1rem;
-	padding: 1rem;
-	background: #f8f9fa;
-	border-bottom: 1px solid #ccc;
+		flex: 0 0 auto;
+		display: flex;
+		justify-content: center;
+		gap: 1rem;
+		padding: 1rem;
+		background: #f8f9fa;
+		border-bottom: 1px solid #ccc;
 	}
 	.center-area {
-	flex: 1 1 auto;
-	position: relative;  /* allows absolute positioning of images */
-	background: #eee;
-	/* background: url("img/background.jpg") no-repeat center center;
-	background-size: cover; */
-	display: flex;
-	align-items: center;
-	justify-content: center;
+		flex: 1 1 auto;
+		position: relative;  /* allows absolute positioning of images */
+		background: #eee;
+		/* background: url("img/background.jpg") no-repeat center center;
+		background-size: cover; */
+		display: flex;
+		align-items: center;
+		justify-content: center;
 	}
 	.center-area h1 {
-	color: #333;
+		color: #333;
 	}
 	.clickable-img {
-	position: absolute;
-	width: 120px;
-	height: auto;
-	cursor: pointer;
-	transition: transform 0.2s;
+		position: absolute;
+		width: 120px;
+		height: auto;
+		cursor: pointer;
+		transition: transform 0.2s;
 	}
 	.clickable-img:hover {
-	transform: scale(1.05);
+		transform: scale(1.05);
 	}
 	.bottom-left {
-	bottom: 100px;
-	left: 100px;
+		bottom: 50px;
+		left: 120px;
 	}
 	.bottom-left-panel {
-	bottom: 70px;
-	left: 300px;
+		bottom: 60px;
+		left: 350px;
 	}
 	.top-right {
-	top: 100px;
-	right: 100px;
+		top: 100px;
+		right: 100px;
 	}
 
 	/* Stats panel */
 	.stats-panel {
-	position: absolute;
-	width: 280px;
-	padding: 15px;
-	background: rgb(0, 0, 0);
-	border-left: 1px solid #ccc;
-	box-shadow: -2px 0 6px rgba(0,0,0,0.1);
-	display: none; /* hidden until image click */
+		position: absolute;
+		width: 280px;
+		padding: 15px;
+		background: rgb(0, 0, 0);
+		border-left: 1px solid #ccc;
+		box-shadow: -2px 0 6px rgba(0,0,0,0.1);
+		display: none;
 	}
 	.stats-line {
-	margin: 5px 0;
-	color: #ffffff;
-	font-weight: bold;
+		margin: 5px 0;
+		color: #ffffff;
+		font-weight: bold;
 	}
 	.stats-images {
-	margin-top: 15px;
+		margin-top: 15px;
 	}
 	.stat-with-number {
-	display: flex;
-	align-items: center;
-	margin-bottom: 10px;
+		display: flex;
+		align-items: center;
+		margin-bottom: 10px;
 	}
 	.stat-with-number img {
-	width: 50px;
-	margin-right: 10px;
+		width: 50px;
+		margin-right: 10px;
 	}
 	.stat-number {
-	font-size: 18px;
-	font-weight: bold;
-	color: #007bff;
+		font-size: 18px;
+		font-weight: bold;
+		color: #007bff;
 	}
 	.stats-images img {
-	width: 50px;
-	margin-right: 10px;
+		width: 50px;
+		margin-right: 10px;
+	}
+	.dropdown {
+		border: 1px solid #ccc;
+		border-radius: 5px;
+		max-width: 200px;
+		background: white;
+	}
+
+	.dropdown-item {
+		padding: 5px;
+		cursor: pointer;
+	}
+
+	.dropdown-item:hover {
+		background: #f0f0f0;
 	}
 </style>
 </head>
@@ -125,17 +140,18 @@
 
 
 	<!-- Menu déroulant selection perso (caché par défaut) -->
-	<div id="dropdownMenu_perso" style="display:none; position:absolute; bottom:140px; left:10px; background:white; border:1px solid #ccc; padding:5px; border-radius:5px;">
+	<div id="dropdownMenu_perso" style="display:none; position:absolute; bottom:240px; left:20px; background:white; border:1px solid #ccc; padding:5px; border-radius:5px;">
 	<select id="menuSelect_perso" onchange="showStats()">
 		<option value="">-- Choisir un personnage --</option>
 	</select>
 	</div>
 
 	<!-- Menu déroulant selection palier (caché par défaut) -->
-	<div id="dropdownMenu_palier" style="display:none; position:absolute; bottom:100px; left:30px; background:white; border:1px solid #ccc; padding:5px; border-radius:5px;">
-	<select id="menuSelect_palier" onchange="showStats()">
+	<div id="dropdownMenu_palier" style="display:none; position:absolute; bottom:10px; left:10px; background:white; border:1px solid #ccc; padding:5px; border-radius:5px;">
+	<input type="hidden" id="palierValue">
+	<id id="menuSelect_palier" onchange="showStats()">
 		<option value="">-- Choisir un palier --</option>
-	</select>
+	</id>
 	</div>
 
 	<!-- Stats panel -->
@@ -147,12 +163,12 @@
 		<!-- attack stats -->
 		<div class="stats-images">
 		<div class="stat-with-number">
-			<img src="img/stat/mele.png" alt="mele" style="height:20px; vertical-align:middle;">
+			<img src="img/stat/mele.png" alt="mele" style="height:30px; width:30px; vertical-align:middle;">
 			<img id="attack-mele-img"  alt="Small 1">
 			<span id="attack-mele-nbr" class="stat-number">0</span>
 		</div>
-		<div class="stat-with-number">
-			<img src="img/stat/range.png" alt="range" style="height:20px; vertical-align:middle;">
+		<div class="stat-with-number" id ="attack-range-div">
+			<img src="img/stat/range.png" alt="range" style="height:30px; width:30px; vertical-align:middle;">
 			<img id="attack-range-img" alt="Small 1">
 			<span id="attack-range-nbr" class="stat-number">0</span>
 		</div>
@@ -184,13 +200,20 @@
 		let palier = await response_palier.json();
 
 		let select_palier = document.getElementById("menuSelect_palier");
-		select_palier.innerHTML = '<option value="">-- Choisir un palier --</option>';
+		select_palier.innerHTML = '';
 
 		palier.forEach(c => {
-			let option = document.createElement("option");
-			option.value = c.palier;
-			option.textContent = c.palier;
-			select_palier.appendChild(option);
+			let item = document.createElement("div");
+			item.classList.add("dropdown-item");
+			item.innerHTML = `<img src="img/palier/${c.palier}.png" style="height:16px; margin-right:5px;"> ${c.palier}`;
+			
+			item.onclick = () => {
+				// console.log("Selected:", c.palier);
+				document.getElementById("palierValue").value  = c.palier;
+				showStats();
+			};
+
+			select_palier.appendChild(item);
 		});
 	}
 
@@ -206,12 +229,13 @@
 
 	async function showStats() {
 	const perso_nom = document.getElementById("menuSelect_perso").value;
-	const palier_nom = document.getElementById("menuSelect_palier").value;
+	const palier_nom = document.getElementById("palierValue").value;
+	// console.log("Perso:", perso_nom, "Palier:", palier_nom);
 	if (perso_nom && palier_nom) {
 
 		let response = await fetch("mysqli/get_perso_stat.php?nom=" + perso_nom+"&palier=" + palier_nom);
 		let data = await response.json();
-		console.log(data);
+		// console.log(data);
 
 		// afficher le panel et cacher les dropdowns
 		document.getElementById("statsPanel").style.display = "block";
@@ -228,14 +252,12 @@
 		// attaques
 		// si nbr_hit_range = 0 alors on n'affiche pas l'attaque
 		if(data.nbr_hit_range != 0){
-			document.getElementById("attack-range-img").style.display = "block";
-			document.getElementById("attack-range-nbr").style.display = "block";
+			document.getElementById("attack-range-div").style.display = "block";
 			document.getElementById("attack-range-img").src = "img/perfo/" + data.perfo_range + ".png";
 			document.getElementById("attack-range-nbr").innerText = data.nbr_hit_range;
 		}
 		else{
-			document.getElementById("attack-range-img").style.display = "none";
-			document.getElementById("attack-range-nbr").style.display = "none";
+			document.getElementById("attack-range-div").style.display = "none";
 		}
 		document.getElementById("attack-mele-img").src = "img/perfo/" + data.perfo_mele + ".png";
 		document.getElementById("attack-mele-nbr").innerText = data.nbr_hit_mele;
