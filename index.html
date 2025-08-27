@@ -145,7 +145,7 @@
 	}
 	.stats-line {
 		margin: 5px 0;
-		color: #ffffff;
+		color: #000000;
 		font-weight: bold;
 	}
 	.stats-images {
@@ -234,8 +234,8 @@
 				<img id="palier_img_1" alt="icon" class="panel-icon">
 			</div>
 			<div class="stats-row">
-				<div class="stats-line" id="armor_id_2">0</div>
-				<div id="trait_container_2">
+				<div class="stats-line" id="armor_id_1">0</div>
+				<div id="trait_container_1">
 				</div>
 			</div>
 			<div class="stats-line" id="dmg_id_1">0</div>
@@ -425,7 +425,8 @@
 			// afficher traits
 			const trait_container = document.getElementById("trait_container_"+img_id);
 			trait_container.innerHTML = ''; // clear previous traits
-			data.traits.forEach(c => {
+			let traitsArray = JSON.parse(data.traits);
+			traitsArray.forEach(c => {
 				trait_container.innerHTML += `<img src="img/trait/${c}.png" alt="${c}" title="${c}" style="height:20px; margin-right:5px;">`;
 			});
 
