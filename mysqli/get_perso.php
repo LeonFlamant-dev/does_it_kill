@@ -1,4 +1,5 @@
 <?php
+// retur all nom, prettyname available in the db
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 

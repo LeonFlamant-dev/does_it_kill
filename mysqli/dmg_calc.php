@@ -7,7 +7,7 @@ $config = parse_ini_file("../conf.ini", true);
 // exit;
 
 
-switch ($_GET['palier']) {
+switch ($_GET['attack_type']) {
 	case "1":
 		$attack_type = "mele";
 		break;
@@ -18,6 +18,10 @@ switch ($_GET['palier']) {
 		$attack_type = "active";
 		break;
 }
+
+// attackant=" + perso_attackant + "&defenceur=" + perso_defenceur + "&attack_type=" + attack_type+ "&dmg=" + dmg_attackant+ "&hp=" + hp_defenceur+ "&armor=" + armor_defenceur
+
+
 
 
 $mysqli = mysqli_connect($config['database']['hostname'], $config['database']['username'], $config['database']['password'], $config['database']['database']);
@@ -40,6 +44,25 @@ $result = mysqli_query($mysqli,$query );
 while ($row = mysqli_fetch_assoc($result)) {
 	$characters = $row;
 }
+
+
+
+// goal iterate over hit to calculate damage for heach crit possibility
+
+// if target canot block 
+
+
+
+
+
+
+
+
+
+
+// if can block
+
+
 
 header('Content-Type: application/json');
 echo json_encode($characters);

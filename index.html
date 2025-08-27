@@ -194,6 +194,51 @@
 		width: 16px;
 		height: 16px;
 	}
+	.custom-select {
+		position: relative;
+		width: 70px;
+		cursor: pointer;
+		user-select: none;
+		font-family: sans-serif;
+	}
+
+	.custom-select .selected {
+		padding: 5px;
+		border: 1px solid #aaa;
+		border-radius: 6px;
+		background: #fff;
+		display: flex;
+		align-items: center;
+		gap: 6px;
+	}
+
+	.custom-select .options {
+		position: absolute;
+		top: 110%;
+		left: 0;
+		right: 0;
+		border: 1px solid #aaa;
+		border-radius: 6px;
+		background: #fff;
+		box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+		z-index: 10;
+	}
+
+	.custom-select .options div {
+		padding: 5px 10px;
+		display: flex;
+		align-items: center;
+		gap: 6px;
+	}
+
+	.custom-select .options div:hover {
+		background: #eee;
+	}
+
+	.hidden {
+		display: none;
+	}
+
 </style>
 </head>
 <body>
@@ -263,7 +308,7 @@
 		<!-- Top-right image named 2 -->
 		<img id="icon_2" src="img/perso/noperso/icon.png" alt="right Image" class="clickable-img top-right" onclick="showDropdown(2)">
 
-		<!-- Menu déroulant selection perso (caché par défaut) -->
+		<!-- Menu déroulant selection perso 2 -->
 		<div id="dropdownMenu_perso_2" class="top-right-menu-perso">
 		<select id="menuSelect_perso_2" onchange="showStats(2)">
 			<option value="">-- Choisir un personnage --</option>
@@ -303,6 +348,39 @@
 			</div>
 			<img id="active_img_2"  alt="Small 2">
 			<img id="passive_img_2"  alt="Small 3">
+			<div class="stats-row">
+
+
+			<div class="custom-select" id="item_select_1">
+				<div class="selected">
+					<img src="img/item/crit_empty.png" >
+				</div>
+
+				<div id="item1_id_2" class="options hidden">
+					<!-- goal is to replace this when charging item type liked to faction preferences -->
+					<div data-value="empty"><img src="img/item/crit_empty.png" ></div> 
+					<div data-value="bolt_pistol"><img src="img/item/blot_pistol.png" ></div>
+				</div>
+			</div>
+			<div class="custom-select" id="armor_select_1">
+				<div class="selected">
+					<img src="img/item/defensive_empty.png" >
+				</div>
+
+				<div id="item2_id_2" class="options hidden">
+		
+				</div>
+			</div>
+			<div class="custom-select" id="armor_select_1">
+				<div class="selected">
+					<img src="img/item/crit_boost_empty.png" >
+				</div>
+
+				<div id="item3_id_2" class="options hidden">
+
+				</div>
+			</div>
+			</div>
 		</div>
 	</div>
 	
@@ -417,9 +495,12 @@
 			document.getElementById("btn_active_id").src = "img/perso/" + data.nom + "/active.png";
 
 			// stats
-			document.getElementById("hp_id_"+img_id).innerHTML = '<img src="img/stat/hp_noir.png" alt="hp" style="height:20px; vertical-align:middle;"> '+ data.hp;
-			document.getElementById("armor_id_"+img_id).innerHTML = '<img src="img/stat/armor_noir.png" alt="armor" style="height:20px; vertical-align:middle;"> '+ data.armor;
-			document.getElementById("dmg_id_"+img_id).innerHTML = '<img src="img/stat/dmg_noir.png" alt="dmg" style="height:20px; vertical-align:middle;"> '+ data.dmg;
+			document.getElementById("hp_id_"+img_id).innerHTML = '<img src="img/stat/hp_noir.png" alt="hp" style="height:20px; vertical-align:middle;"> '+
+			`<input type="number" id="hp_input_${img_id}" value="${data.hp}" style="width:70px;">`;
+			document.getElementById("armor_id_"+img_id).innerHTML = '<img src="img/stat/armor_noir.png" alt="armor" style="height:20px; vertical-align:middle;"> '+ 
+			`<input type="number" id="armor_input_${img_id}" value="${data.armor}" style="width:70px;">`;
+			document.getElementById("dmg_id_"+img_id).innerHTML = '<img src="img/stat/dmg_noir.png" alt="dmg" style="height:20px; vertical-align:middle;"> '+ 
+			`<input type="number" id="dmg_input_${img_id}" value="${data.dmg}" style="width:70px;">`;
 
 
 			// afficher traits
@@ -430,23 +511,65 @@
 				trait_container.innerHTML += `<img src="img/trait/${c}.png" alt="${c}" title="${c}" style="height:20px; margin-right:5px;">`;
 			});
 
+			//afficher items
+			// data.item1 data.item2 data.item3
+			for (let index = 1; index <= 3; index++) {
+				let response = await fetch("mysqli/get_item_stat.php?nom=" + perso_nom+"&palier=" + palier_nom +"&item_type=item"+index);
+				let data = await response.json();
+				const item_container = document.getElementById("item"+index+"_id_"+img_id);
+				item_container.innerHTML = '<div data-value="empty"><img src="img/item/crit_empty.png" ></div>';
+				data.forEach(c => {
+					item_container.innerHTML += `<div data-value="${c.nom}"><img src="img/item/${c.nom}.png" title="${c.nom}""> </div>`;
+				});
+				
+			}
+
 		}
 	}
 
 	async function calcule_dmg(attack_type) {
 		// attack_type: 1 = mele, 2 = range, 3 = active
-		const perso_nom = document.getElementById("menuSelect_perso_1").value;
-		const palier_nom = document.getElementById("palierValue_1").value;
-		if (perso_nom && palier_nom) {
-			// let response = await fetch("mysqli/calc_dmg.php?nom=" + perso_nom + "&palier=" + palier_nom + "&attack_type=" + attack_type);
+		const perso_attackant = document.getElementById("menuSelect_perso_1").value;
+		const dmg_attackant = document.getElementById("dmg_input_1").value;
+		const perso_defenceur = document.getElementById("menuSelect_perso_2").value;
+		const hp_defenceur = document.getElementById("hp_input_").value; // for now 1 always attack and 2 always defence (tochange later)
+		const armor_defenceur = document.getElementById("armor_input_2").value
+		// need to have perso and dmg attackant and perso,hp,armor defenceur
+		if (perso_attackant && perso_defenceur) {
+			// let response = await fetch("mysqli/calc_dmg.php?attackant=" + perso_attackant + "&defenceur=" + perso_defenceur + "&attack_type=" + attack_type+ "&dmg=" + dmg_attackant+ "&hp=" + hp_defenceur+ "&armor=" + armor_defenceur);
 			// let data = await response.json();
-			// alert("Damage calculated: " + data.damage);
-			alert("This feature is under development.");
+			alert("Damage calculated: " + dmg_attackant);
+			// alert("This feature is under development.");
 		} else {
 			alert("Please select a character and tier first.");
 		}
 	}
 	
+	document.querySelectorAll(".custom-select").forEach(select => {
+		const selected = select.querySelector(".selected");
+		const options = select.querySelector(".options");
+
+		// Toggle dropdown
+		selected.addEventListener("click", () => {
+			options.classList.toggle("hidden");
+		});
+
+		// Handle option click
+		options.querySelectorAll("div").forEach(option => {
+			option.addEventListener("click", () => {
+			selected.innerHTML = option.innerHTML; // Replace selected with chosen option
+			selected.dataset.value = option.dataset.value;
+			options.classList.add("hidden");
+			});
+		});
+
+		// Close if clicked outside
+		document.addEventListener("click", (e) => {
+			if (!select.contains(e.target)) {
+			options.classList.add("hidden");
+			}
+		});
+	});
 
 	document.getElementById("icon_1").addEventListener("click", loadMenuOptions(1));
 	document.getElementById("icon_2").addEventListener("click", loadMenuOptions(2));
