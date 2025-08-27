@@ -1,8 +1,6 @@
 <!-- TODO 
-	traits
 	tooltip on hover
-	modifiable stats
-	items
+	items fix perso qui vas vers le bas
 	barre de vie
 -->
 <!DOCTYPE html>
@@ -510,8 +508,12 @@
 			document.getElementById("attack_mele_nbr_"+img_id).innerText = data.nbr_hit_mele;
 
 			document.getElementById("palier_img_"+img_id).src = "img/palier/" + palier_nom + ".png";
+
 			//active btn img
-			document.getElementById("btn_active_id").src = "img/perso/" + data.nom + "/active.png";
+			if(img_id == 1)
+			{
+				document.getElementById("btn_active_id").src = "img/perso/" + data.nom + "/active.png";
+			}
 
 			// stats
 			document.getElementById("hp_id_"+img_id).innerHTML = '<img src="img/stat/hp_noir.png" alt="hp" style="height:20px; vertical-align:middle;"> '+
