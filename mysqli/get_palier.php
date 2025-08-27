@@ -15,13 +15,13 @@ if (mysqli_connect_errno()) {
 }
 $result = mysqli_query($mysqli, "SELECT id, palier FROM palier");
 
-$characters = [];
+$palier = [];
 while ($row = mysqli_fetch_assoc($result)) {
-	$characters[] = $row;
+	$palier[] = $row;
 }
 
 header('Content-Type: application/json');
-echo json_encode($characters);
+echo json_encode($palier);
 
 mysqli_close($mysqli);
 ?>

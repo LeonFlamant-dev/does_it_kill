@@ -13,7 +13,7 @@ if (mysqli_connect_errno()) {
 	die("Erreur connexion: " . mysqli_connect_error());
 }
 
-$query="SELECT p.nom, p.nbr_hit_mele, p.perfo_mele, p.nbr_hit_range, p.perfo_range, p.traits, p.faction, s.hp, s.armor, s.dmg 
+$query="SELECT p.nom, p.nbr_hit_mele, p.perfo_mele, p.nbr_hit_range, p.perfo_range, p.item1, p.item2, p.item3, p.traits, p.faction, s.hp, s.armor, s.dmg 
 FROM personnage p 
 LEFT JOIN perso_stat s 
 ON p.nom = s.nom AND palier = '".$_GET['palier']."' 

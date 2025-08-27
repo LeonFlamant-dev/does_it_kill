@@ -24,13 +24,13 @@ WHERE p.nom = "'.$_GET['nom'].'";';
 
 $result = mysqli_query($mysqli,$query );
 
-
+$item = [];
 while ($row = mysqli_fetch_assoc($result)) {
-	$characters = $row;
+	$item = $row;
 }
 
 header('Content-Type: application/json');
-echo json_encode($characters);
+echo json_encode($item);
 
 mysqli_close($mysqli);
 ?>

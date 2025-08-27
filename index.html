@@ -514,11 +514,12 @@
 			//afficher items
 			// data.item1 data.item2 data.item3
 			for (let index = 1; index <= 3; index++) {
-				let response = await fetch("mysqli/get_item_stat.php?nom=" + perso_nom+"&palier=" + palier_nom +"&item_type=item"+index);
-				let data = await response.json();
+				let response_item = await fetch("mysqli/get_item_stat.php?nom=" + perso_nom+"&palier=" + palier_nom +"&item_type=item"+index);
+				let data_item = await response_item.json();
+				console.log(data_item);
 				const item_container = document.getElementById("item"+index+"_id_"+img_id);
-				item_container.innerHTML = '<div data-value="empty"><img src="img/item/crit_empty.png" ></div>';
-				data.forEach(c => {
+				item_container.innerHTML = '<div data-value="empty"><img src="img/item/'+data[`item${index}`]+'_empty.png" ></div>';
+				data_item.forEach(c => {
 					item_container.innerHTML += `<div data-value="${c.nom}"><img src="img/item/${c.nom}.png" title="${c.nom}""> </div>`;
 				});
 				
