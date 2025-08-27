@@ -297,8 +297,34 @@
 				<img id="attack_range_img_1" alt="Small 1">
 				<span id="attack_range_nbr_1" class="stat-number">0</span>
 			</div>
-			<img id="active_img_1"  alt="Small 2">
-			<img id="passive_img_1"  alt="Small 3">
+			<div>
+				<img id="active_img_1"  alt="active">
+				<img id="passive_img_1"  alt="passive">
+			</div>
+			<div class="stats-row">
+				<!-- items select -->
+				<div class="custom-select" id="item_1_select_1">
+					<div class="selected">
+						<img src="img/item/crit_empty.png" >
+					</div>
+					<div id="item1_id_1" class="options hidden">
+						<!-- <div data-value="empty"><img src="img/item/crit_empty.png" ></div> 
+						<div data-value="bolt_pistol"><img src="img/item/blot_pistol.png" ></div> -->
+					</div>
+				</div>
+				<div class="custom-select" id="item_2_select_1">
+					<div class="selected">
+						<img src="img/item/defensive_empty.png" >
+					</div>
+					<div id="item2_id_1" class="options hidden"></div>
+				</div>
+				<div class="custom-select" id="item_3_select_1">
+					<div class="selected">
+						<img src="img/item/crit_boost_empty.png" >
+					</div>
+					<div id="item3_id_1" class="options hidden"></div>
+				</div>
+			</div>
 			</div>
 		</div>
 
@@ -346,40 +372,33 @@
 				<img id="attack_range_img_2" alt="Small 1">
 				<span id="attack_range_nbr_2" class="stat-number">0</span>
 			</div>
-			<img id="active_img_2"  alt="Small 2">
-			<img id="passive_img_2"  alt="Small 3">
+			<div>
+				<img id="active_img_2"  alt="active">
+				<img id="passive_img_2"  alt="passive">
+			</div>
 			<div class="stats-row">
-
-
-			<div class="custom-select" id="item_select_1">
-				<div class="selected">
-					<img src="img/item/crit_empty.png" >
+				<!-- items select -->
+				<div class="custom-select" id="item_1_select_2">
+					<div class="selected">
+						<img src="img/item/crit_empty.png" >
+					</div>
+					<div id="item1_id_2" class="options hidden">
+						<!-- <div data-value="empty"><img src="img/item/crit_empty.png" ></div> 
+						<div data-value="bolt_pistol"><img src="img/item/blot_pistol.png" ></div> -->
+					</div>
 				</div>
-
-				<div id="item1_id_2" class="options hidden">
-					<!-- goal is to replace this when charging item type liked to faction preferences -->
-					<div data-value="empty"><img src="img/item/crit_empty.png" ></div> 
-					<div data-value="bolt_pistol"><img src="img/item/blot_pistol.png" ></div>
+				<div class="custom-select" id="item_2_select_2">
+					<div class="selected">
+						<img src="img/item/defensive_empty.png" >
+					</div>
+					<div id="item2_id_2" class="options hidden"></div>
 				</div>
-			</div>
-			<div class="custom-select" id="armor_select_1">
-				<div class="selected">
-					<img src="img/item/defensive_empty.png" >
+				<div class="custom-select" id="item_3_select_2">
+					<div class="selected">
+						<img src="img/item/crit_boost_empty.png" >
+					</div>
+					<div id="item3_id_2" class="options hidden"></div>
 				</div>
-
-				<div id="item2_id_2" class="options hidden">
-		
-				</div>
-			</div>
-			<div class="custom-select" id="armor_select_1">
-				<div class="selected">
-					<img src="img/item/crit_boost_empty.png" >
-				</div>
-
-				<div id="item3_id_2" class="options hidden">
-
-				</div>
-			</div>
 			</div>
 		</div>
 	</div>
@@ -522,7 +541,14 @@
 				data_item.forEach(c => {
 					item_container.innerHTML += `<div data-value="${c.nom}"><img src="img/item/${c.nom}.png" title="${c.nom}""> </div>`;
 				});
-				
+				item_container.querySelectorAll("div").forEach(option => {
+					option.addEventListener("click", () => {
+						const selected = document.querySelector(`#item_${index}_select_${img_id} .selected`);
+						selected.innerHTML = option.innerHTML;
+						selected.dataset.value = option.dataset.value;
+						item_container.classList.add("hidden");
+					});
+				});
 			}
 
 		}
