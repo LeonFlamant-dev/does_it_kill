@@ -26,7 +26,7 @@ $result = mysqli_query($mysqli,$query );
 
 $item = [];
 while ($row = mysqli_fetch_assoc($result)) {
-	$item = $row;
+	$item[] = $row;
 }
 
 header('Content-Type: application/json');
