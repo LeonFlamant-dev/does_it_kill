@@ -10,6 +10,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>taticus does it kill</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <style>
 	body, html {
 		height: 100%;
@@ -254,8 +256,14 @@
 	<div class="center-area">
 		<h1>Main Content Area</h1>
 
-		<!-- Bottom-left image named 1 -->
-		<img id="icon_1" src="img/perso/noperso/icon.png" alt="Left Image" class="clickable-img bottom-left" onclick="showDropdown(1)">
+
+<!-- <button type="button" class="btn btn-secondary" data-toggle="tooltip" data-placement="top" title="Tooltip on top"></button> -->
+		
+			<img id="icon_1" src="img/perso/noperso/icon.png" alt="Left Image" class="clickable-img bottom-left"  onclick="showDropdown(1)" 
+			data-bs-toggle="tooltip" 
+			data-bs-placement="top" 
+			title="I am a tooltip!">
+
 
 		<!-- Menu déroulant selection perso (caché par défaut) -->
 		<div id="dropdownMenu_perso_1" class="bottom-left-menu-perso">
@@ -528,9 +536,12 @@
 			const trait_container = document.getElementById("trait_container_"+img_id);
 			trait_container.innerHTML = ''; // clear previous traits
 			let traitsArray = JSON.parse(data.traits);
-			traitsArray.forEach(c => {
-				trait_container.innerHTML += `<img src="img/trait/${c}.png" alt="${c}" title="${c}" style="height:20px; margin-right:5px;">`;
-			});
+			for (const nom_trait of traitsArray) {
+				let response_trait = await fetch("mysqli/get_trait_description.php?trait=" + nom_trait);
+				let data_trait = await response_trait.json();
+
+				trait_container.innerHTML += `<img src="img/trait/${nom_trait}.png" alt="${nom_trait}" title="${nom_trait}" data-bs-toggle="tooltip" data-bs-placement="top" title="${data_trait.description}" style="height:20px; margin-right:5px;">`;
+			}
 
 			//afficher items
 			// data.item1 data.item2 data.item3
@@ -603,6 +614,8 @@
 	document.getElementById("icon_1").addEventListener("click", loadMenuOptions(1));
 	document.getElementById("icon_2").addEventListener("click", loadMenuOptions(2));
 
+	const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+	const tooltipList = [...tooltipTriggerList].map(el => new bootstrap.Tooltip(el));
 
 </script>
 
