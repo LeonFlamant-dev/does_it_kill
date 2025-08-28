@@ -1,10 +1,8 @@
 <!-- TODO 
-	items fix perso qui vas vers le bas
 	barre de vie pour perso ? non ! non ?
 	les actif marche avec le parseur ouaaaa
 	mettre les tooltip partout
-	faire que la selection d'item influence les calculs
-	faire une ligne de stat en dessous des items pour les stats venant des items
+	maitenant utiliser les stats des items
 	rendre les choses plus jolie mdr
 
 -->
@@ -69,6 +67,7 @@
 		height: auto;
 		cursor: pointer;
 		transition: transform 0.2s;
+		border-radius: 6px;
 	}
 	.clickable-img:hover {
 		transform: scale(1.05);
@@ -138,6 +137,7 @@
 		border-left: 1px solid #ccc;
 		box-shadow: -2px 0 6px rgba(0,0,0,0.1);
 		display: none;
+		border-radius: 6px;
 	}
 	.stats-row {
 		display: flex;
@@ -170,7 +170,8 @@
 		color: #007bff;
 	}
 	.stats-images img {
-		width: 50px;
+		max-width: 50px;
+		max-height: 50px;
 		margin-right: 10px;
 	}
 	.dropdown {
@@ -197,10 +198,12 @@
 	}
 	.custom-select {
 		position: relative;
+		
 		width: 70px;
 		cursor: pointer;
 		user-select: none;
 		font-family: sans-serif;
+	
 	}
 	.custom-select .selected {
 		padding: 5px;
@@ -213,7 +216,7 @@
 	}
 	.custom-select .options {
 		position: absolute;
-		top: 110%;
+		top: 0%;
 		left: 0;
 		right: 0;
 		border: 1px solid #aaa;
@@ -221,6 +224,8 @@
 		background: #fff;
 		box-shadow: 0 2px 6px rgba(0,0,0,0.15);
 		z-index: 10;
+		max-height: 200px;
+		overflow-y: auto;
 	}
 	.custom-select .options div {
 		padding: 5px 10px;
@@ -234,20 +239,67 @@
 	.hidden {
 		display: none;
 	}
-	.health-container {
-		width: 300px;
-		height: 30px;
-		border: 2px solid #333;
+	/* Popup container */
+	.battle-popup {
+		position: fixed;
+		top: 50%;
+		left: 50%;
+		transform: translate(-50%, -50%);
+		background: #fff;
+		border-radius: 12px;
+		border: 1px solid #ddd;
+		padding: 20px;
+		z-index: 9999;
+		max-width: 420px;
+		width: 90%;
+		box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+		animation: fadeIn 0.3s ease-in-out;
+	}
+	/* Each round */
+	.battle-round {
+		margin-bottom: 15px;
+		font-family: Arial, sans-serif;
+	}
+	.battle-round-title {
+		font-weight: bold;
+		margin-bottom: 5px;
+	}
+	/* Health bar */
+	.hp-bar-container {
+		width: 100%;
+		height: 20px;
+		background: #eee;
+		border: 1px solid #ccc;
 		border-radius: 8px;
-		background: #555;
 		overflow: hidden;
 	}
-	.health-bar {
+	.hp-bar {
 		height: 100%;
-		width: 100%; /* start full */
-		background: linear-gradient(to right, #4caf50, #2e7d32);
-		transition: width 0.3s ease;
+		background: linear-gradient(to right, #ff4d4d, #cc0000);
+		transition: width 0.4s ease;
 	}
+	/* Close button */
+	.battle-close-btn {
+		display: block;
+		margin: 10px auto 0;
+		padding: 8px 16px;
+		background: #007bff;
+		color: white;
+		border: none;
+		border-radius: 6px;
+		cursor: pointer;
+		font-weight: bold;
+		transition: background 0.3s ease;
+	}
+	.battle-close-btn:hover {
+		background: #0056b3;
+	}
+	/* Fade animation */
+	@keyframes fadeIn {
+		from { opacity: 0; transform: translate(-50%, -45%); }
+		to { opacity: 1; transform: translate(-50%, -50%); }
+	}
+
 </style>
 </head>
 <body>
@@ -263,7 +315,7 @@
 
 	<!-- Center Area -->
 	<div class="center-area">
-		<h1>Main Content Area</h1>
+		<h1></h1>
 
 
 <!-- <button type="button" class="btn btn-secondary" data-toggle="tooltip" data-placement="top" title="Tooltip on top"></button> -->
@@ -341,14 +393,14 @@
 					</div>
 				</div>
 				<div class="stats-row">
-					<input class="stats-line" style="display: none;" id="item_1_stat_1_id_1">0</input>
-					<input class="stats-line" style="display: none;" id="item_2_stat_1_id_1">0</input>
-					<input class="stats-line" style="display: none;" id="item_3_stat_1_id_1">0</input>
+					<input class="stats-line" type="number" style="width: 70px;" id="item_1_stat_1_id_1"></input>
+					<input class="stats-line" type="number" style="width: 70px;" id="item_2_stat_1_id_1"></input>
+					<input class="stats-line" type="number" style="width: 70px;" id="item_3_stat_1_id_1"></input>
 				</div>
 				<div class="stats-row">
-					<input class="stats-line" style="display: none;" id="item_1_stat_2_id_1">0</input>
-					<input class="stats-line" style="display: none;" id="item_2_stat_2_id_1">0</input>
-					<input class="stats-line" style="display: none;" id="item_3_stat_2_id_1">0</input>
+					<input class="stats-line" type="number" style="width: 70px;" id="item_1_stat_2_id_1"></input>
+					<input class="stats-line" type="number" style="width: 70px;" id="item_2_stat_2_id_1"></input>
+					<input class="stats-line" type="number" style="width: 70px;" id="item_3_stat_2_id_1"></input>
 				</div>
 			</div>
 		</div>
@@ -387,60 +439,70 @@
 
 			<!-- attack stats -->
 			<div class="stats-images">
-			<div class="stat-with-number">
-				<img src="img/stat/mele.png" alt="mele" style="height:30px; width:30px; vertical-align:middle;">
-				<img id="attack_mele_img_2" data-bs-toggle="tooltip" data-bs-placement="top" title=""  alt="Small 1">
-				<span id="attack_mele_nbr_2" class="stat-number">0</span>
-			</div>
-			<div class="stat-with-number" id ="attack_range_div_2">
-				<img src="img/stat/range.png" alt="range" style="height:30px; width:30px; vertical-align:middle;">
-				<img id="attack_range_img_2" data-bs-toggle="tooltip" data-bs-placement="top" title="" alt="Small 1" >
-				<span id="attack_range_nbr_2" class="stat-number">0</span>
-			</div>
-			<div>
-				<img id="active_img_2" data-bs-toggle="tooltip" data-bs-placement="top" title="" alt="active">
-				<img id="passive_img_2" data-bs-toggle="tooltip" data-bs-placement="top" title="" alt="passive">
-			</div>
-			<div class="stats-row">
-				<!-- items select -->
-				<div class="custom-select" id="item_1_select_2">
-					<div class="selected">
-						<img src="img/item/crit_empty.png" >
+				<div class="stat-with-number">
+					<img src="img/stat/mele.png" alt="mele" style="height:30px; width:30px; vertical-align:middle;">
+					<img id="attack_mele_img_2" data-bs-toggle="tooltip" data-bs-placement="top" title=""  alt="Small 1">
+					<span id="attack_mele_nbr_2" class="stat-number">0</span>
+				</div>
+				<div class="stat-with-number" id ="attack_range_div_2">
+					<img src="img/stat/range.png" alt="range" style="height:30px; width:30px; vertical-align:middle;">
+					<img id="attack_range_img_2" data-bs-toggle="tooltip" data-bs-placement="top" title="" alt="Small 1" >
+					<span id="attack_range_nbr_2" class="stat-number">0</span>
+				</div>
+				<div>
+					<img id="active_img_2" data-bs-toggle="tooltip" data-bs-placement="top" title="" alt="active">
+					<img id="passive_img_2" data-bs-toggle="tooltip" data-bs-placement="top" title="" alt="passive">
+				</div>
+				<div class="stats-row">
+					<!-- items select -->
+					<div class="custom-select" id="item_1_select_2">
+						<div class="selected">
+							<img src="img/item/crit_empty.png" >
+						</div>
+						<div id="item1_id_2" class="options hidden">
+							<!-- <div data-value="empty"><img src="img/item/crit_empty.png" ></div> 
+							<div data-value="bolt_pistol"><img src="img/item/blot_pistol.png" ></div> -->
+						</div>
 					</div>
-					<div id="item1_id_2" class="options hidden">
-						<!-- <div data-value="empty"><img src="img/item/crit_empty.png" ></div> 
-						<div data-value="bolt_pistol"><img src="img/item/blot_pistol.png" ></div> -->
+					<div class="custom-select" id="item_2_select_2">
+						<div class="selected">
+							<img src="img/item/defensive_empty.png" >
+						</div>
+						<div id="item2_id_2" class="options hidden"></div>
+					</div>
+					<div class="custom-select" id="item_3_select_2">
+						<div class="selected">
+							<img src="img/item/crit_boost_empty.png" >
+						</div>
+						<div id="item3_id_2" class="options hidden"></div>
 					</div>
 				</div>
-				<div class="custom-select" id="item_2_select_2">
-					<div class="selected">
-						<img src="img/item/defensive_empty.png" >
-					</div>
-					<div id="item2_id_2" class="options hidden"></div>
+				<div class="stats-row">
+					<input class="stats-line" type="number" style="width: 70px;" id="item_1_stat_1_id_2"></input>
+					<input class="stats-line" type="number" style="width: 70px;" id="item_2_stat_1_id_2"></input>
+					<input class="stats-line" type="number" style="width: 70px;" id="item_3_stat_1_id_2"></input>
 				</div>
-				<div class="custom-select" id="item_3_select_2">
-					<div class="selected">
-						<img src="img/item/crit_boost_empty.png" >
-					</div>
-					<div id="item3_id_2" class="options hidden"></div>
+				<div class="stats-row">
+					<input class="stats-line" type="number" style="width: 70px;" id="item_1_stat_2_id_2"></input>
+					<input class="stats-line" type="number" style="width: 70px;" id="item_2_stat_2_id_2"></input>
+					<input class="stats-line" type="number" style="width: 70px;" id="item_3_stat_2_id_2"></input>
 				</div>
 			</div>
 		</div>
-	</div>
 	
-	<div class="bottom-bar">
-		<!-- fill so button are on the right -->
-		<button class="btn btn-primary" onclick=calcule_dmg(1)>
-			<img src="img/stat/mele.png" alt="" class="btn-icon" > attack
-		</button>
-		<button class="btn btn-success" id="btn_range"  onclick=calcule_dmg(2)>
-			<img  src="img/stat/range.png" alt="" class="btn-icon"> attack
-		</button>
-		<button class="btn btn-danger"  onclick=calcule_dmg(3)>
-			<img id="btn_active_id" alt="" class="btn-icon"> active
-		</button>
+		<div class="bottom-bar">
+			<!-- fill so button are on the right -->
+			<button class="btn btn-primary" onclick=calcule_dmg(1)>
+				<img src="img/stat/mele.png" alt="" class="btn-icon" > attack
+			</button>
+			<button class="btn btn-success" id="btn_range"  onclick=calcule_dmg(2)>
+				<img  src="img/stat/range.png" alt="" class="btn-icon"> attack
+			</button>
+			<button class="btn btn-danger"  onclick=calcule_dmg(3)>
+				<img id="btn_active_id" alt="" class="btn-icon"> active
+			</button>
+		</div>
 	</div>
-
 </div>
 
 <script>
@@ -575,30 +637,22 @@
 				const item_stat_2 = document.getElementById("item_"+index+"_stat_2_id_"+img_id);
 
 				const item_container = document.getElementById("item"+index+"_id_"+img_id);
-				item_container.innerHTML = '<div data-value="empty"><img src="img/item/'+data[`item${index}`]+'_empty.png" data-bs-toggle="tooltip" data-bs-placement="right" title="no Item" ></div>';
+				item_container.innerHTML = '<div data-value="empty" data-stat_1="0" data-stat_2="0"><img src="img/item/'+data[`item${index}`]+'_empty.png" data-bs-toggle="tooltip" data-bs-placement="right" title="no Item" ></div>';
 				data_item.forEach(c => {
-					item_container.innerHTML += `<div data-value="${c.nom}" stat_1="${c.stat_1}" stat_2="${c.stat_2}"><img src="img/item/${c.nom}.png" data-bs-toggle="tooltip" data-bs-placement="right" title="${c.prettyname}""></div>`;
+					item_container.innerHTML += `<div data-value="${c.nom}" data-stat_1="${c.stat_1}" data-stat_2="${c.stat_2}"><img src="img/item/${c.nom}.png" data-bs-toggle="tooltip" data-bs-placement="right" title="${c.prettyname}""></div>`;
 				});
 				item_container.querySelectorAll("div").forEach(option => {
 					option.addEventListener("click", () => {
 						const selected = document.querySelector(`#item_${index}_select_${img_id} .selected`);
-						if(option.dataset.value === "empty") {
-							item_stat_1.style.display = "none";
-							item_stat_1.value = 0;
-							item_stat_2.style.display = "none";
-							item_stat_2.value = 0;
-						}
-						else{
-							item_stat_1.value = option.dataset.stat_1;
-							item_stat_1.style.display = "block";
-							item_stat_2.value = option.dataset.stat_2;
-							item_stat_2.style.display = "block";
-						}
+						item_stat_1.value = option.dataset.stat_1;
+						item_stat_2.value = option.dataset.stat_2;
 						selected.innerHTML = option.innerHTML;
 						selected.dataset.value = option.dataset.value;
 						item_container.classList.add("hidden");
 					});
 				});
+				const emptyOption = item_container.querySelector('div[data-value="empty"]');
+				emptyOption.click();
 			}
 
 		}
@@ -625,35 +679,22 @@
 
 		// Create a popup for the battle result
 		const popup = document.createElement("div");
-		popup.style.position = "fixed";
-		popup.style.top = "50%";
-		popup.style.left = "50%";
-		popup.style.transform = "translate(-50%, -50%)";
-		popup.style.background = "#fff";
-		popup.style.border = "1px solid #ccc";
-		popup.style.padding = "20px";
-		popup.style.zIndex = "9999";
-		popup.style.maxWidth = "400px";
-		// todo afficher le resultat dans une popup en iterant sur data avec une barre de vie pour chaque iteration 
+		popup.classList.add("battle-popup");
 	
 		data.forEach((round, i) => {
 			const roundDiv = document.createElement("div");
-			roundDiv.style.marginBottom = "10px";
+			roundDiv.classList.add("battle-round");
 
 			const title = document.createElement("div");
+			title.classList.add("battle-round-title");
 			title.textContent = `${round.type_of_round} : ${round.dmg_dealt} damage`;
 			roundDiv.appendChild(title);
 
 			const hpBarContainer = document.createElement("div");
-			hpBarContainer.style.width = "100%";
-			hpBarContainer.style.height = "20px";
-			hpBarContainer.style.background = "#eee";
-			hpBarContainer.style.border = "1px solid #ccc";
-			hpBarContainer.style.marginTop = "5px";
+			hpBarContainer.classList.add("hp-bar-container");
 
 			const hpBar = document.createElement("div");
-			hpBar.style.height = "100%";
-			hpBar.style.background = "red";
+			hpBar.classList.add("hp-bar");
 			hpBar.style.width = `${(round.remain_hp / round.start_hp) * 100}%`;
 			hpBarContainer.appendChild(hpBar);
 
@@ -664,7 +705,7 @@
 		// Close button
 		const closeBtn = document.createElement("button");
 		closeBtn.textContent = "Close";
-		closeBtn.style.marginTop = "10px";
+		closeBtn.classList.add("battle-close-btn");
 		closeBtn.onclick = () => popup.remove();
 		popup.appendChild(closeBtn);
 
