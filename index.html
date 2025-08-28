@@ -262,7 +262,7 @@
 			<img id="icon_1" src="img/perso/noperso/icon.png" alt="Left Image" class="clickable-img bottom-left"  onclick="showDropdown(1)" 
 			data-bs-toggle="tooltip" 
 			data-bs-placement="top" 
-			title="I am a tooltip!">
+			title="">
 
 
 		<!-- Menu déroulant selection perso (caché par défaut) -->
@@ -304,8 +304,8 @@
 				<span id="attack_range_nbr_1" class="stat-number">0</span>
 			</div>
 			<div>
-				<img id="active_img_1"  alt="active">
-				<img id="passive_img_1"  alt="passive">
+				<img id="active_img_1" data-bs-toggle="tooltip" data-bs-placement="top" title="" alt="active">
+				<img id="passive_img_1" data-bs-toggle="tooltip" data-bs-placement="top" title="" alt="passive">
 			</div>
 			<div class="stats-row">
 				<!-- items select -->
@@ -379,8 +379,8 @@
 				<span id="attack_range_nbr_2" class="stat-number">0</span>
 			</div>
 			<div>
-				<img id="active_img_2"  alt="active">
-				<img id="passive_img_2"  alt="passive">
+				<img id="active_img_2" data-bs-toggle="tooltip" data-bs-placement="top" title="" alt="active">
+				<img id="passive_img_2" data-bs-toggle="tooltip" data-bs-placement="top" title="" alt="passive">
 			</div>
 			<div class="stats-row">
 				<!-- items select -->
@@ -494,7 +494,8 @@
 			// active et passive
 			document.getElementById("active_img_"+img_id).src = "img/perso/" + data.nom + "/active.png";
 			document.getElementById("passive_img_"+img_id).src = "img/perso/" + data.nom + "/passive.png";
-
+			document.getElementById("active_img_"+img_id).title = data.active_description;
+			document.getElementById("passive_img_"+img_id).title = data.passive_description;
 			// attaques
 			// si nbr_hit_range = 0 alors on n'affiche pas l'attaque
 			if(data.nbr_hit_range != 0){
@@ -552,9 +553,9 @@
 				let data_item = await response_item.json();
 				console.log(data_item);
 				const item_container = document.getElementById("item"+index+"_id_"+img_id);
-				item_container.innerHTML = '<div data-value="empty"><img src="img/item/'+data[`item${index}`]+'_empty.png" ></div>';
+				item_container.innerHTML = '<div data-value="empty"><img src="img/item/'+data[`item${index}`]+'_empty.png" data-bs-toggle="tooltip" data-bs-placement="top" title="no Item" ></div>';
 				data_item.forEach(c => {
-					item_container.innerHTML += `<div data-value="${c.nom}"><img src="img/item/${c.nom}.png" title="${c.nom}""> </div>`;
+					item_container.innerHTML += `<div data-value="${c.nom}"><img src="img/item/${c.nom}.png" data-bs-toggle="tooltip" data-bs-placement="right" title="${c.nom}""> </div>`;
 				});
 				item_container.querySelectorAll("div").forEach(option => {
 					option.addEventListener("click", () => {
@@ -584,6 +585,9 @@
 			// let data = await response.json();
 			alert("Damage calculated: " + dmg_attackant);
 			// alert("This feature is under development.");
+
+
+			// todo afficher le resultat dans une popup en iterant sur data avec une barre de vie pour chaque iteration 
 		} else {
 			alert("Please select a character and tier first.");
 		}
