@@ -15,7 +15,7 @@ if (mysqli_connect_errno()) {
 }
 
 // list des crit du perso 
-$query ='SELECT i.nom, i.prettyname, s.crit_dmg, s.hp, s.armor from personnage p 
+$query ='SELECT i.nom, i.prettyname, s.stat_1, s.stat_2 from personnage p 
 JOIN item i on p.'.$_GET['item_nbr'].' = i.type
 RIGHT JOIN item_faction f on i.nom = f.item AND f.faction = p.faction
 LEFT JOIN item_stat s on i.nom = s.nom AND s.palier = "'.$_GET['palier'].'"

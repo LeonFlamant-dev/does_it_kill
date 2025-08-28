@@ -1,7 +1,12 @@
 <!-- TODO 
-	tooltip on hover
 	items fix perso qui vas vers le bas
-	barre de vie
+	barre de vie pour perso ? non ! non ?
+	les actif marche avec le parseur ouaaaa
+	mettre les tooltip partout
+	faire que la selection d'item influence les calculs
+	faire une ligne de stat en dessous des items pour les stats venant des items
+	rendre les choses plus jolie mdr
+
 -->
 <!DOCTYPE html>
 <html lang="en">
@@ -297,44 +302,54 @@
 
 			<!-- attack stats -->
 			<div class="stats-images">
-			<div class="stat-with-number">
-				<img src="img/stat/mele.png" alt="mele" style="height:30px; width:30px; vertical-align:middle;">
-				<img id="attack_mele_img_1" data-bs-toggle="tooltip" data-bs-placement="top" title="" alt="Small 1">
-				<span id="attack_mele_nbr_1" class="stat-number">0</span>
-			</div>
-			<div class="stat-with-number" id ="attack_range_div_1">
-				<img src="img/stat/range.png" alt="range" style="height:30px; width:30px; vertical-align:middle;">
-				<img id="attack_range_img_1"data-bs-toggle="tooltip" data-bs-placement="top" title="" alt="Small 1">
-				<span id="attack_range_nbr_1" class="stat-number">0</span>
-			</div>
-			<div>
-				<img id="active_img_1" data-bs-toggle="tooltip" data-bs-placement="top" title="" alt="active">
-				<img id="passive_img_1" data-bs-toggle="tooltip" data-bs-placement="top" title="" alt="passive">
-			</div>
-			<div class="stats-row">
-				<!-- items select -->
-				<div class="custom-select" id="item_1_select_1">
-					<div class="selected">
-						<img src="img/item/crit_empty.png" >
+				<div class="stat-with-number">
+					<img src="img/stat/mele.png" alt="mele" style="height:30px; width:30px; vertical-align:middle;">
+					<img id="attack_mele_img_1" data-bs-toggle="tooltip" data-bs-placement="top" title="" alt="Small 1">
+					<span id="attack_mele_nbr_1" class="stat-number">0</span>
+				</div>
+				<div class="stat-with-number" id ="attack_range_div_1">
+					<img src="img/stat/range.png" alt="range" style="height:30px; width:30px; vertical-align:middle;">
+					<img id="attack_range_img_1"data-bs-toggle="tooltip" data-bs-placement="top" title="" alt="Small 1">
+					<span id="attack_range_nbr_1" class="stat-number">0</span>
+				</div>
+				<div class="stat-with-number">
+					<img id="active_img_1" data-bs-toggle="tooltip" data-bs-placement="top" title="" alt="active">
+					<img id="passive_img_1" data-bs-toggle="tooltip" data-bs-placement="top" title="" alt="passive">
+				</div>
+				<div class="stats-row">
+					<!-- items select -->
+					<div class="custom-select" id="item_1_select_1">
+						<div class="selected">
+							<img src="img/item/crit_empty.png" >
+						</div>
+						<div id="item1_id_1" class="options hidden">
+							<!-- <div data-value="empty"><img src="img/item/crit_empty.png" ></div> 
+							<div data-value="bolt_pistol"><img src="img/item/blot_pistol.png" ></div> -->
+						</div>
 					</div>
-					<div id="item1_id_1" class="options hidden">
-						<!-- <div data-value="empty"><img src="img/item/crit_empty.png" ></div> 
-						<div data-value="bolt_pistol"><img src="img/item/blot_pistol.png" ></div> -->
+					<div class="custom-select" id="item_2_select_1">
+						<div class="selected">
+							<img src="img/item/defensive_empty.png" >
+						</div>
+						<div id="item2_id_1" class="options hidden"></div>
+					</div>
+					<div class="custom-select" id="item_3_select_1">
+						<div class="selected">
+							<img src="img/item/crit_boost_empty.png" >
+						</div>
+						<div id="item3_id_1" class="options hidden"></div>
 					</div>
 				</div>
-				<div class="custom-select" id="item_2_select_1">
-					<div class="selected">
-						<img src="img/item/defensive_empty.png" >
-					</div>
-					<div id="item2_id_1" class="options hidden"></div>
+				<div class="stats-row">
+					<input class="stats-line" style="display: none;" id="item_1_stat_1_id_1">0</input>
+					<input class="stats-line" style="display: none;" id="item_2_stat_1_id_1">0</input>
+					<input class="stats-line" style="display: none;" id="item_3_stat_1_id_1">0</input>
 				</div>
-				<div class="custom-select" id="item_3_select_1">
-					<div class="selected">
-						<img src="img/item/crit_boost_empty.png" >
-					</div>
-					<div id="item3_id_1" class="options hidden"></div>
+				<div class="stats-row">
+					<input class="stats-line" style="display: none;" id="item_1_stat_2_id_1">0</input>
+					<input class="stats-line" style="display: none;" id="item_2_stat_2_id_1">0</input>
+					<input class="stats-line" style="display: none;" id="item_3_stat_2_id_1">0</input>
 				</div>
-			</div>
 			</div>
 		</div>
 
@@ -556,14 +571,29 @@
 				let response_item = await fetch("mysqli/get_item_stat.php?nom=" + perso_nom+"&palier=" + palier_nom +"&item_nbr=item"+index);
 				let data_item = await response_item.json();
 				console.log(data_item);
+				const item_stat_1 = document.getElementById("item_"+index+"_stat_1_id_"+img_id);
+				const item_stat_2 = document.getElementById("item_"+index+"_stat_2_id_"+img_id);
+
 				const item_container = document.getElementById("item"+index+"_id_"+img_id);
 				item_container.innerHTML = '<div data-value="empty"><img src="img/item/'+data[`item${index}`]+'_empty.png" data-bs-toggle="tooltip" data-bs-placement="right" title="no Item" ></div>';
 				data_item.forEach(c => {
-					item_container.innerHTML += `<div data-value="${c.nom}"><img src="img/item/${c.nom}.png" data-bs-toggle="tooltip" data-bs-placement="right" title="${c.prettyname}""> </div>`;
+					item_container.innerHTML += `<div data-value="${c.nom}" stat_1="${c.stat_1}" stat_2="${c.stat_2}"><img src="img/item/${c.nom}.png" data-bs-toggle="tooltip" data-bs-placement="right" title="${c.prettyname}""></div>`;
 				});
 				item_container.querySelectorAll("div").forEach(option => {
 					option.addEventListener("click", () => {
 						const selected = document.querySelector(`#item_${index}_select_${img_id} .selected`);
+						if(option.dataset.value === "empty") {
+							item_stat_1.style.display = "none";
+							item_stat_1.value = 0;
+							item_stat_2.style.display = "none";
+							item_stat_2.value = 0;
+						}
+						else{
+							item_stat_1.value = option.dataset.stat_1;
+							item_stat_1.style.display = "block";
+							item_stat_2.value = option.dataset.stat_2;
+							item_stat_2.style.display = "block";
+						}
 						selected.innerHTML = option.innerHTML;
 						selected.dataset.value = option.dataset.value;
 						item_container.classList.add("hidden");
