@@ -124,7 +124,6 @@
 		top: 10px;
 		right: 260px;
 	}
-
 	/* Stats panel */
 	.stats-panel {
 		position: absolute;
@@ -175,12 +174,10 @@
 		max-width: 200px;
 		background: white;
 	}
-
 	.dropdown-item {
 		padding: 5px;
 		cursor: pointer;
 	}
-
 	.dropdown-item:hover {
 		background: #f0f0f0;
 	}
@@ -189,7 +186,6 @@
 		align-items: center;
 		gap: 6px;
 	}
-
 	.btn-icon {
 		width: 16px;
 		height: 16px;
@@ -201,7 +197,6 @@
 		user-select: none;
 		font-family: sans-serif;
 	}
-
 	.custom-select .selected {
 		padding: 5px;
 		border: 1px solid #aaa;
@@ -211,7 +206,6 @@
 		align-items: center;
 		gap: 6px;
 	}
-
 	.custom-select .options {
 		position: absolute;
 		top: 110%;
@@ -223,22 +217,32 @@
 		box-shadow: 0 2px 6px rgba(0,0,0,0.15);
 		z-index: 10;
 	}
-
 	.custom-select .options div {
 		padding: 5px 10px;
 		display: flex;
 		align-items: center;
 		gap: 6px;
 	}
-
 	.custom-select .options div:hover {
 		background: #eee;
 	}
-
 	.hidden {
 		display: none;
 	}
-
+	.health-container {
+		width: 300px;
+		height: 30px;
+		border: 2px solid #333;
+		border-radius: 8px;
+		background: #555;
+		overflow: hidden;
+	}
+	.health-bar {
+		height: 100%;
+		width: 100%; /* start full */
+		background: linear-gradient(to right, #4caf50, #2e7d32);
+		transition: width 0.3s ease;
+	}
 </style>
 </head>
 <body>
@@ -577,20 +581,64 @@
 		const perso_attackant = document.getElementById("menuSelect_perso_1").value;
 		const dmg_attackant = document.getElementById("dmg_input_1").value;
 		const perso_defenceur = document.getElementById("menuSelect_perso_2").value;
-		const hp_defenceur = document.getElementById("hp_input_").value; // for now 1 always attack and 2 always defence (tochange later)
+		const hp_defenceur = document.getElementById("hp_input_2").value; // for now 1 always attack and 2 always defence (tochange later)
 		const armor_defenceur = document.getElementById("armor_input_2").value
 		// need to have perso and dmg attackant and perso,hp,armor defenceur
-		if (perso_attackant && perso_defenceur) {
-			// let response = await fetch("mysqli/calc_dmg.php?attackant=" + perso_attackant + "&defenceur=" + perso_defenceur + "&attack_type=" + attack_type+ "&dmg=" + dmg_attackant+ "&hp=" + hp_defenceur+ "&armor=" + armor_defenceur);
-			// let data = await response.json();
-			alert("Damage calculated: " + dmg_attackant);
-			// alert("This feature is under development.");
-
-
-			// todo afficher le resultat dans une popup en iterant sur data avec une barre de vie pour chaque iteration 
-		} else {
+		if (!perso_attackant || !perso_defenceur) {
 			alert("Please select a character and tier first.");
+			return;
 		}
+
+		let response = await fetch("mysqli/dmg_calc.php?attackant=" + perso_attackant + "&defenceur=" + perso_defenceur + "&attack_type=" + attack_type+ "&dmg=" + dmg_attackant+ "&hp=" + hp_defenceur+ "&armor=" + armor_defenceur);
+		let data = await response.json();
+
+
+		// Create a popup for the battle result
+		const popup = document.createElement("div");
+		popup.style.position = "fixed";
+		popup.style.top = "50%";
+		popup.style.left = "50%";
+		popup.style.transform = "translate(-50%, -50%)";
+		popup.style.background = "#fff";
+		popup.style.border = "1px solid #ccc";
+		popup.style.padding = "20px";
+		popup.style.zIndex = "9999";
+		popup.style.maxWidth = "400px";
+		// todo afficher le resultat dans une popup en iterant sur data avec une barre de vie pour chaque iteration 
+	
+		data.forEach((round, i) => {
+			const roundDiv = document.createElement("div");
+			roundDiv.style.marginBottom = "10px";
+
+			const title = document.createElement("div");
+			title.textContent = `${round.type_of_round} : ${round.dmg_dealt} damage`;
+			roundDiv.appendChild(title);
+
+			const hpBarContainer = document.createElement("div");
+			hpBarContainer.style.width = "100%";
+			hpBarContainer.style.height = "20px";
+			hpBarContainer.style.background = "#eee";
+			hpBarContainer.style.border = "1px solid #ccc";
+			hpBarContainer.style.marginTop = "5px";
+
+			const hpBar = document.createElement("div");
+			hpBar.style.height = "100%";
+			hpBar.style.background = "red";
+			hpBar.style.width = `${(round.remain_hp / round.start_hp) * 100}%`;
+			hpBarContainer.appendChild(hpBar);
+
+			roundDiv.appendChild(hpBarContainer);
+			popup.appendChild(roundDiv);
+		});
+
+		// Close button
+		const closeBtn = document.createElement("button");
+		closeBtn.textContent = "Close";
+		closeBtn.style.marginTop = "10px";
+		closeBtn.onclick = () => popup.remove();
+		popup.appendChild(closeBtn);
+
+		document.body.appendChild(popup);
 	}
 	
 	document.querySelectorAll(".custom-select").forEach(select => {
