@@ -295,12 +295,12 @@
 			<div class="stats-images">
 			<div class="stat-with-number">
 				<img src="img/stat/mele.png" alt="mele" style="height:30px; width:30px; vertical-align:middle;">
-				<img id="attack_mele_img_1"  alt="Small 1">
+				<img id="attack_mele_img_1" data-bs-toggle="tooltip" data-bs-placement="top" title="" alt="Small 1">
 				<span id="attack_mele_nbr_1" class="stat-number">0</span>
 			</div>
 			<div class="stat-with-number" id ="attack_range_div_1">
 				<img src="img/stat/range.png" alt="range" style="height:30px; width:30px; vertical-align:middle;">
-				<img id="attack_range_img_1" alt="Small 1">
+				<img id="attack_range_img_1"data-bs-toggle="tooltip" data-bs-placement="top" title="" alt="Small 1">
 				<span id="attack_range_nbr_1" class="stat-number">0</span>
 			</div>
 			<div>
@@ -370,12 +370,12 @@
 			<div class="stats-images">
 			<div class="stat-with-number">
 				<img src="img/stat/mele.png" alt="mele" style="height:30px; width:30px; vertical-align:middle;">
-				<img id="attack_mele_img_2"  alt="Small 1">
+				<img id="attack_mele_img_2" data-bs-toggle="tooltip" data-bs-placement="top" title=""  alt="Small 1">
 				<span id="attack_mele_nbr_2" class="stat-number">0</span>
 			</div>
 			<div class="stat-with-number" id ="attack_range_div_2">
 				<img src="img/stat/range.png" alt="range" style="height:30px; width:30px; vertical-align:middle;">
-				<img id="attack_range_img_2" alt="Small 1">
+				<img id="attack_range_img_2" data-bs-toggle="tooltip" data-bs-placement="top" title="" alt="Small 1" >
 				<span id="attack_range_nbr_2" class="stat-number">0</span>
 			</div>
 			<div>
@@ -481,7 +481,7 @@
 
 			let response = await fetch("mysqli/get_perso_stat.php?nom=" + perso_nom+"&palier=" + palier_nom);
 			let data = await response.json();
-			console.log(data);
+			// console.log(data);
 
 			// afficher le panel et cacher les dropdowns
 			document.getElementById("statsPanel_"+img_id).style.display = "block";
@@ -500,6 +500,7 @@
 			if(data.nbr_hit_range != 0){
 				document.getElementById("attack_range_div_"+img_id).style.display = "block";
 				document.getElementById("attack_range_img_"+img_id).src = "img/perfo/" + data.perfo_range + ".png";
+				document.getElementById("attack_range_img_"+img_id).title = data.perfo_range_description;
 				document.getElementById("attack_range_nbr_"+img_id).innerText = data.nbr_hit_range;
 				if(img_id == 1){
 					document.getElementById("btn_range").disabled = false;
@@ -513,6 +514,7 @@
 				document.getElementById("attack_range_div_"+img_id).style.display = "none";
 			}
 			document.getElementById("attack_mele_img_"+img_id).src = "img/perfo/" + data.perfo_mele + ".png";
+			document.getElementById("attack_mele_img_"+img_id).title = data.perfo_mele_description;
 			document.getElementById("attack_mele_nbr_"+img_id).innerText = data.nbr_hit_mele;
 
 			document.getElementById("palier_img_"+img_id).src = "img/palier/" + palier_nom + ".png";
@@ -539,8 +541,8 @@
 			for (const nom_trait of traitsArray) {
 				let response_trait = await fetch("mysqli/get_trait_description.php?trait=" + nom_trait);
 				let data_trait = await response_trait.json();
-
-				trait_container.innerHTML += `<img src="img/trait/${nom_trait}.png" alt="${nom_trait}" title="${nom_trait}" data-bs-toggle="tooltip" data-bs-placement="top" title="${data_trait.description}" style="height:20px; margin-right:5px;">`;
+				console.log(data_trait.description);
+				trait_container.innerHTML += `<img src="img/trait/${nom_trait}.png" alt="${nom_trait}" data-bs-toggle="tooltip" data-bs-placement="bottom" title="${data_trait.description}" style="height:20px; margin-right:5px;">`;
 			}
 
 			//afficher items
@@ -565,6 +567,8 @@
 			}
 
 		}
+		const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+		const tooltipList = [...tooltipTriggerList].map(el => new bootstrap.Tooltip(el));
 	}
 
 	async function calcule_dmg(attack_type) {
