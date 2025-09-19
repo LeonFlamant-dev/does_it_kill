@@ -35,10 +35,6 @@ if($attack_type != 'active') {
 	left JOIN atk_perforation ap ON ap.nom = p.perfo_".$attack_type."
 	WHERE p.nom ='".$_GET['attackant']."';";
 }
-// echo $query;
-// exit;
-
-//
 
 $result = mysqli_query($mysqli,$query );
 
@@ -47,32 +43,93 @@ while ($row = mysqli_fetch_assoc($result)) {
 	$characters = $row;
 }
 
+//on recupere les items de l'attaquant
+
+
+$data = json_decode($_GET['itemsattaquant'], true); 
+// print_r(($data));
+
+//pour le perso 1 on veux juste les chance de crit total 
+$crit_boost = 0;
+$crit_chance = 0;
+$crit_value = 0;
+for ($i = 2; $i >= 0; $i--)
+{
+	print($data[$i]);
+	switch ($data['item_id_'.$i][0]) {
+		case "crit":
+			if($crit_chance == 0) 
+			{
+				$crit_chance = ($data['item_id_'.$i][1]+$crit_boost)/100;
+				$crit_value = $crit_value+$data['item_id_'.$i][2];
+			}
+			else
+			{
+				$crit_chance = ($data['item_id_'.$i][0]+$crit_boost)/100 + (1-($data['item_id_'.$i][1]+$crit_boost)/100)*$crit_chance;
+				$crit_value = $crit_value+$data['item_id_'.$i][2];
+			}
+			break;
+		case "crit_boost":
+			$crit_boost = $data['item_id_'.$i][1];
+			$crit_value = $crit_value+$data['item_id_'.$i][2];
+			break;
+	}
+
+}
+
+
+//pour le perso 2 on veux juste les stats et les chance de block total 
+$data = json_decode($_GET['itemsdefenceur'], true); 
+// print_r(($data));
+$block_chance = 0;
+$block_value = 0;
+$hp = $_GET['hp']+0;
+$armor = $_GET['armor']+0;
+
+for ($i = 2; $i >= 0; $i--)
+{
+	switch ($data['item_id_'.$i][0]) {
+		case "defensive":
+			$hp = $data['item_id_'.$i][1];
+			$armor = $data['item_id_'.$i][2];
+			break;
+		case 'block':
+			$block_chance = ($data['item_id_'.$i][1]+$crit_boost)/100;
+			$block_value = $block_value+$data['item_id_'.$i][2];
+			break;
+		case "crit_boost":
+			$block_chance = $data['item_id_'.$i][1];
+			$block_value = $block_value+$data['item_id_'.$i][2];
+			break;
+	}
+
+}
+	
+
+// todo DMG AMPLIFICATION et MUltiplicateur
+$dmg_amp = 0;
+$multiplicateur = 1;
+
+
+
 $nbr_hit = $characters['nbr_hit_'.$attack_type]+0; // does nothing but help me by remaning a variable
 
 $round = [];
 
 $nbr_of_block = 0;
 $nbr_of_crit = 0;
-
-
-
-
-// $round[] = $thisround;
-
-
-
 // on a pas les crit pour l'instant 
-// for ($i = 0; $i < $nbr_hit; $i++) {
-// 	// $nbr_of_crit = $i;
-// 	for ($y = 0; $y < $nbr_hit; $y++) {
-		// $nbr_of_block = $y;
+for ($i = 0; $i <= $nbr_hit; $i++) {
+	$nbr_of_crit = $i;
+	for ($y = 0; $y <= $nbr_hit; $y++) {
+		$nbr_of_block = $y;
 
 		// ./DoesItKill.py dmg nbr_hit per vie armor nbr_crit = 0 c_crit=0 d_crit=0 nbr_bloc=0 c_bloc = 0 v_bloc = 0 d_ampli = 0 multi = 1
 		// ./DoesItKill.py 30 2 0.3 200 20 1 0.25 12	
 
-		// echo './DoesItKill.py '.$_GET['dmg'].' '.$nbr_hit.' '.$characters['per_perfo'].' '.$_GET['hp'].' '.$_GET['armor'];
+		// echo './../DoesItKill.py '.$_GET['dmg'].' '.$nbr_hit.' '.$characters['per_perfo'].' '.$hp.' '.$armor.' '.$nbr_of_crit.' '.$crit_chance.' '.$crit_value.' '.$nbr_of_block.' '.$block_chance.' '.$block_value.' '.$dmg_amp.' '.$multiplicateur;
 		// exit;
-		$retour_string = shell_exec('./../DoesItKill.py '.$_GET['dmg'].' '.$nbr_hit.' '.$characters['per_perfo'].' '.$_GET['hp'].' '.$_GET['armor']);//.' '.$i.' '.$chancecrit.' '.$dùgcrit.' '.$y.' '.$c_bloc.''.$v_bloc.''.$dmg_amp.''.$multiplicateur);
+		$retour_string = shell_exec('./../DoesItKill.py '.$_GET['dmg'].' '.$nbr_hit.' '.$characters['per_perfo'].' '.$hp.' '.$armor.' '.$nbr_of_crit.' '.$crit_chance.' '.$crit_value.' '.$nbr_of_block.' '.$block_chance.' '.$block_value.' '.$dmg_amp.' '.$multiplicateur);
 		// { "tdmg" : [0,0,0] , "proba" : 0 }
 		// echo $retour_string;
 		$python_array = json_decode($retour_string, true);
@@ -110,9 +167,9 @@ $nbr_of_crit = 0;
 		$thisround['affichage_hp_max_dmg'] = $thisround['hp_min_dmg'] / $thisround['start_hp'] * 100 - $thisround['affichage_hp_med_dmg'] - $thisround['affichage_hp_min_dmg'];
 		
 		$round[] = $thisround;
-// 	}
+	}
 
-// }
+}
 
 
 

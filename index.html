@@ -251,6 +251,8 @@
 		padding: 20px;
 		z-index: 100;
 		max-width: 420px;
+		max-height: 100%;
+		overflow-y: scroll;
 		width: 90%;
 		box-shadow: 0 8px 20px rgba(0,0,0,0.25);
 		animation: fadeIn 0.3s ease-in-out;
@@ -375,7 +377,7 @@
 				</div>
 				<div class="stat-with-number" id ="attack_range_div_1">
 					<img src="img/stat/range.png" alt="range" style="height:30px; width:30px; vertical-align:middle;">
-					<img id="attack_range_img_1"data-bs-toggle="tooltip" data-bs-placement="top" title="" alt="Small 1">
+					<img id="attack_range_img_1" data-bs-toggle="tooltip" data-bs-placement="top" title="" alt="Small 1">
 					<span id="attack_range_nbr_1" class="stat-number">0</span>
 				</div>
 				<div class="stat-with-number">
@@ -388,22 +390,20 @@
 						<div class="selected">
 							<img src="img/item/crit_empty.png" >
 						</div>
-						<div id="item1_id_1" class="options hidden">
-							<!-- <div data-value="empty"><img src="img/item/crit_empty.png" ></div> 
-							<div data-value="bolt_pistol"><img src="img/item/blot_pistol.png" ></div> -->
+						<div id="item_1_id_1" class="options hidden" data-type="notype">
 						</div>
 					</div>
-					<div class="custom-select" id="item_2_select_1">
+					<div class="custom-select" id="item_2_select_1" data-type="notype">
 						<div class="selected">
 							<img src="img/item/defensive_empty.png" >
 						</div>
-						<div id="item2_id_1" class="options hidden"></div>
+						<div id="item_2_id_1" class="options hidden"></div>
 					</div>
-					<div class="custom-select" id="item_3_select_1">
+					<div class="custom-select" id="item_3_select_1" data-type="notype">
 						<div class="selected">
 							<img src="img/item/crit_boost_empty.png" >
 						</div>
-						<div id="item3_id_1" class="options hidden"></div>
+						<div id="item_3_id_1" class="options hidden"></div>
 					</div>
 				</div>
 				<div class="stats-row">
@@ -460,7 +460,7 @@
 				</div>
 				<div class="stat-with-number" id ="attack_range_div_2">
 					<img src="img/stat/range.png" alt="range" style="height:30px; width:30px; vertical-align:middle;">
-					<img id="attack_range_img_2" data-bs-toggle="tooltip" data-bs-placement="top" title="" alt="Small 1" >
+					<img id="attack_range_img_2" data-bs-toggle="tooltip" data-bs-placement="top" title="" alt="Small 1">
 					<span id="attack_range_nbr_2" class="stat-number">0</span>
 				</div>
 				<div>
@@ -473,22 +473,20 @@
 						<div class="selected">
 							<img src="img/item/crit_empty.png" >
 						</div>
-						<div id="item1_id_2" class="options hidden">
-							<!-- <div data-value="empty"><img src="img/item/crit_empty.png" ></div> 
-							<div data-value="bolt_pistol"><img src="img/item/blot_pistol.png" ></div> -->
+						<div id="item_1_id_2" class="options hidden" data-type="notype">
 						</div>
 					</div>
-					<div class="custom-select" id="item_2_select_2">
+					<div class="custom-select" id="item_2_select_2" data-type="notype">
 						<div class="selected">
 							<img src="img/item/defensive_empty.png" >
 						</div>
-						<div id="item2_id_2" class="options hidden"></div>
+						<div id="item_2_id_2" class="options hidden"></div>
 					</div>
-					<div class="custom-select" id="item_3_select_2">
+					<div class="custom-select" id="item_3_select_2" data-type="notype">
 						<div class="selected">
 							<img src="img/item/crit_boost_empty.png" >
 						</div>
-						<div id="item3_id_2" class="options hidden"></div>
+						<div id="item_3_id_2" class="options hidden"></div>
 					</div>
 				</div>
 				<div class="stats-row">
@@ -571,17 +569,15 @@
 	async function showStats(img_id) {
 		const perso_nom = document.getElementById("menuSelect_perso_"+img_id).value;
 		const palier_nom = document.getElementById("palierValue_"+img_id).value;
-		// console.log("Perso:", perso_nom, "Palier:", palier_nom);
+
 		if (perso_nom && palier_nom) {
 
 			let response = await fetch("mysqli/get_perso_stat.php?nom=" + perso_nom+"&palier=" + palier_nom);
 			let data = await response.json();
-			// console.log(data);
+
 
 			// afficher le panel et cacher les dropdowns
 			document.getElementById("statsPanel_"+img_id).style.display = "block";
-			// document.getElementById("dropdownMenu_perso"+img_id).style.display = "none";
-			// document.getElementById("dropdownMenu_palier"+img_id).style.display = "none";
 
 			// images
 			// icon
@@ -615,7 +611,7 @@
 
 			document.getElementById("palier_img_"+img_id).src = "img/palier/" + palier_nom + ".png";
 
-			//active btn img
+			//img active btn 
 			if(img_id == 1)
 			{
 				document.getElementById("btn_active_id").src = "img/perso/" + data.nom + "/active.png";
@@ -637,7 +633,6 @@
 			for (const nom_trait of traitsArray) {
 				let response_trait = await fetch("mysqli/get_trait_description.php?trait=" + nom_trait);
 				let data_trait = await response_trait.json();
-				// console.log(data_trait.description);
 				trait_container.innerHTML += `<img src="img/trait/${nom_trait}.png" alt="${nom_trait}" data-bs-toggle="tooltip" data-bs-placement="bottom" title="${data_trait.description}" style="height:20px; margin-right:5px;">`;
 			}
 
@@ -646,20 +641,20 @@
 			for (let index = 1; index <= 3; index++) {
 				let response_item = await fetch("mysqli/get_item_stat.php?nom=" + perso_nom+"&palier=" + palier_nom +"&item_nbr=item"+index);
 				let data_item = await response_item.json();
-				// console.log(data_item);
 				const item_stat_1 = document.getElementById("item_"+index+"_stat_1_id_"+img_id);
 				const item_stat_2 = document.getElementById("item_"+index+"_stat_2_id_"+img_id);
 
-				const item_container = document.getElementById("item"+index+"_id_"+img_id);
-				item_container.innerHTML = '<div data-value="empty" data-stat_1="0" data-stat_2="0"><img src="img/item/'+data[`item${index}`]+'_empty.png" data-bs-toggle="tooltip" data-bs-placement="right" title="no Item" ></div>';
+				const item_container = document.getElementById("item_"+index+"_id_"+img_id);
+				item_container.innerHTML = '<div data-type="notype" data-value="empty" data-stat_1="0" data-stat_2="0"><img src="img/item/'+data[`item${index}`]+'_empty.png" data-bs-toggle="tooltip" data-bs-placement="right" title="no Item" ></div>';
 				data_item.forEach(c => {
-					item_container.innerHTML += `<div data-value="${c.nom}" data-stat_1="${c.stat_1}" data-stat_2="${c.stat_2}"><img src="img/item/${c.nom}.png" data-bs-toggle="tooltip" data-bs-placement="right" title="${c.prettyname}""></div>`;
+					item_container.innerHTML += `<div data-type="${c.type}" data-value="${c.nom}" data-stat_1="${c.stat_1}" data-stat_2="${c.stat_2}"><img src="img/item/${c.nom}.png" data-bs-toggle="tooltip" data-bs-placement="right" title="${c.prettyname}""></div>`;
 				});
 				item_container.querySelectorAll("div").forEach(option => {
 					option.addEventListener("click", () => {
 						const selected = document.querySelector(`#item_${index}_select_${img_id} .selected`);
 						item_stat_1.value = option.dataset.stat_1;
 						item_stat_2.value = option.dataset.stat_2;
+						item_container.dataset.type = option.dataset.type;
 						selected.innerHTML = option.innerHTML;
 						selected.dataset.value = option.dataset.value;
 						item_container.classList.add("hidden");
@@ -687,7 +682,29 @@
 			return;
 		}
 
-		let response = await fetch("mysqli/dmg_calc.php?attackant=" + perso_attackant + "&defenceur=" + perso_defenceur + "&attack_type=" + attack_type+ "&dmg=" + dmg_attackant+ "&hp=" + hp_defenceur+ "&armor=" + armor_defenceur);
+		let items = {};
+		// here get item info we need item type stat1 and stat2 for 1,2,3 for perso 1 and 2,3 for perso 2  item_2_stat_1_id_1 
+		for (let i = 1; i <= 3; i++) {
+			const item_stat_1 = document.getElementById("item_"+i+"_stat_1_id_1").value;
+			const item_stat_2 = document.getElementById("item_"+i+"_stat_2_id_1").value;
+			const item_selected = document.getElementById("item_"+i+"_id_1").dataset.type;
+			items[`item_id_${i}`] = [item_selected, item_stat_1, item_stat_2];
+		}
+		const jsonData1 = JSON.stringify(items);
+		const encoded_item_id_1 = encodeURIComponent(jsonData1);
+
+		items = {};
+		for (let i = 1; i <= 3; i++) {
+			const item_stat_1 = document.getElementById("item_"+i+"_stat_1_id_2").value;
+			const item_stat_2 = document.getElementById("item_"+i+"_stat_2_id_2").value;
+			const item_selected = document.getElementById("item_"+i+"_id_2").dataset.type;
+			items[`item_id_${i}`] = [item_selected, item_stat_1, item_stat_2];
+		}
+		const jsonData2 = JSON.stringify(items);
+		const encoded_item_id_2 = encodeURIComponent(jsonData2);
+
+
+		let response = await fetch("mysqli/dmg_calc.php?attackant=" + perso_attackant + "&defenceur=" + perso_defenceur + "&attack_type=" + attack_type+ "&dmg=" + dmg_attackant+ "&hp=" + hp_defenceur+ "&armor=" + armor_defenceur+ "&itemsattaquant=" + encoded_item_id_1 + "&itemsdefenceur=" + encoded_item_id_2);
 		let data = await response.json();
 
 
