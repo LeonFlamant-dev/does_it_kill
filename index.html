@@ -249,7 +249,7 @@
 		border-radius: 12px;
 		border: 1px solid #ddd;
 		padding: 20px;
-		z-index: 9999;
+		z-index: 100;
 		max-width: 420px;
 		width: 90%;
 		box-shadow: 0 8px 20px rgba(0,0,0,0.25);
@@ -272,12 +272,26 @@
 		border: 1px solid #ccc;
 		border-radius: 8px;
 		overflow: hidden;
+		display: flex;
 	}
+
 	.hp-bar {
 		height: 100%;
-		background: linear-gradient(to right, #ff4d4d, #cc0000);
 		transition: width 0.4s ease;
 	}
+
+	.green {
+		background: linear-gradient(to right, #28a745, #218838); /* Green */
+	}
+
+	.yellow {
+		background: linear-gradient(to right, #ffc107, #e0a800); /* Yellow */
+	}
+
+	.red {
+		background: linear-gradient(to right, #ff4d4d, #cc0000); /* Red */
+	}
+
 	/* Close button */
 	.battle-close-btn {
 		display: block;
@@ -623,7 +637,7 @@
 			for (const nom_trait of traitsArray) {
 				let response_trait = await fetch("mysqli/get_trait_description.php?trait=" + nom_trait);
 				let data_trait = await response_trait.json();
-				console.log(data_trait.description);
+				// console.log(data_trait.description);
 				trait_container.innerHTML += `<img src="img/trait/${nom_trait}.png" alt="${nom_trait}" data-bs-toggle="tooltip" data-bs-placement="bottom" title="${data_trait.description}" style="height:20px; margin-right:5px;">`;
 			}
 
@@ -632,7 +646,7 @@
 			for (let index = 1; index <= 3; index++) {
 				let response_item = await fetch("mysqli/get_item_stat.php?nom=" + perso_nom+"&palier=" + palier_nom +"&item_nbr=item"+index);
 				let data_item = await response_item.json();
-				console.log(data_item);
+				// console.log(data_item);
 				const item_stat_1 = document.getElementById("item_"+index+"_stat_1_id_"+img_id);
 				const item_stat_2 = document.getElementById("item_"+index+"_stat_2_id_"+img_id);
 
@@ -687,20 +701,48 @@
 
 			const title = document.createElement("div");
 			title.classList.add("battle-round-title");
-			title.textContent = `${round.type_of_round} : ${round.dmg_dealt} damage`;
+			title.textContent = `${round.nbr_of_crit} crit and ${round.nbr_of_block} block it has ${round.proba*100}% chance to happen`;
 			roundDiv.appendChild(title);
 
 			const hpBarContainer = document.createElement("div");
 			hpBarContainer.classList.add("hp-bar-container");
 
-			const hpBar = document.createElement("div");
-			hpBar.classList.add("hp-bar");
-			hpBar.style.width = `${(round.remain_hp / round.start_hp) * 100}%`;
-			hpBarContainer.appendChild(hpBar);
+			const greenBar = document.createElement("div");
+			greenBar.classList.add("hp-bar", "green");
+			const yellowBar = document.createElement("div");
+			yellowBar.classList.add("hp-bar", "yellow");
+			const redBar = document.createElement("div");
+			redBar.classList.add("hp-bar", "red");
+
+			redBar.setAttribute("data-bs-toggle", "tooltip");
+			redBar.setAttribute("data-bs-placement", "top");
+			redBar.setAttribute("title", "remaining HP for minimal dmg : " + round.hp_min_dmg + "/" + round.start_hp + "hp");
+
+			yellowBar.setAttribute("data-bs-toggle", "tooltip");
+			yellowBar.setAttribute("data-bs-placement", "top");
+			yellowBar.setAttribute("title", "remaining HP for medium dmg : " + round.hp_med_dmg + "/" + round.start_hp + "hp");
+
+			greenBar.setAttribute("data-bs-toggle", "tooltip");
+			greenBar.setAttribute("data-bs-placement", "top");
+			greenBar.setAttribute("title",  "remaining HP for maximum dmg : " + round.hp_max_dmg + "/" + round.start_hp + "hp");
+
+			hpBarContainer.appendChild(greenBar);
+			hpBarContainer.appendChild(yellowBar);
+			hpBarContainer.appendChild(redBar);
+
+			greenBar.style.width = round.affichage_hp_min_dmg+"%";
+			yellowBar.style.width = round.affichage_hp_med_dmg+"%";
+			redBar.style.width = round.affichage_hp_max_dmg+"%";
+
+	
+			// hpBar.style.width = `${(round.remain_hp / round.start_hp) * 100}%`;
+
 
 			roundDiv.appendChild(hpBarContainer);
 			popup.appendChild(roundDiv);
 		});
+
+
 
 		// Close button
 		const closeBtn = document.createElement("button");
@@ -710,6 +752,8 @@
 		popup.appendChild(closeBtn);
 
 		document.body.appendChild(popup);
+		const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+		const tooltipList = [...tooltipTriggerList].map(el => new bootstrap.Tooltip(el));
 	}
 	
 	document.querySelectorAll(".custom-select").forEach(select => {
