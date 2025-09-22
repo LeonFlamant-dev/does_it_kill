@@ -77,7 +77,7 @@
 		left: 135px;
 	}
 	.top-left {
-		bottom: 20px;
+		top: 20px;
 		left: 20px;
 	}
 	.bottom-left-panel {
@@ -190,13 +190,10 @@
 		max-height: 400px;
 		overflow: scroll;
 	}
-	.buff-images img {
+	.buff-images {
 		max-width: 50px;
 		max-height: 50px;
 		margin-right: 10px;
-	}
-	.buff-images {
-		margin-top: 15px;
 	}
 	.stats-row {
 		display: flex;
@@ -205,7 +202,6 @@
 	}
 	.greyed {
 		filter: grayscale(100%);
-		transition: filter 0.5s ease; /* smooth fade */
 	}
 	.dropdown {
 		border: 1px solid #ccc;
@@ -595,7 +591,7 @@
 	}
 
 	async function showbuffstart() {// peut etre lancer ca que apres que on a le perso et le palier a voir??
-		let response = await fetch("mysqli/get_buff.php?palier=" + palier_nom);
+		let response = await fetch("mysqli/get_buff.php");
 		let data = await response.json();
 		const buff_container = document.getElementById("buffPanel");
 		buff_container.innerHTML = '<div class="buff-images">';
@@ -604,7 +600,7 @@
 			if(length_row == 0){
 				buff_container.innerHTML +='<div class="stat-with-number">';
 			}
-			buff_container.innerHTML +='<img id="buff_img_'+buff.id+'" data-selected="0" class="greyed" data-bs-toggle="tooltip" data-bs-placement="top" title="'+buff.description+'" alt="'+buff.nom+'" src="img/'+buff.locate+'.png" onclick="selectbuff('+buff.id+')" style="cursor:pointer;">';
+			buff_container.innerHTML +='<img id="buff_img_'+buff.id+'" data-selected="0" class="greyed buff-images" data-bs-toggle="tooltip" data-bs-placement="top" title="'+buff.prettyname+' : '+buff.description+'" alt="'+buff.nom+'" src="img/'+buff.locate+'.png" onclick="selectbuff('+buff.id+')" style="cursor:pointer;">';
 			length_row++;
 			if(length_row > 10){
 				buff_container.innerHTML +='</div>';
@@ -612,6 +608,8 @@
 			}
 		}
 		buff_container.innerHTML +='</div>';
+		const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+		const tooltipList = [...tooltipTriggerList].map(el => new bootstrap.Tooltip(el));
 	}
 
 	function getSelectedBuffs() {
@@ -846,11 +844,11 @@
 	
 	function selectbuff(buff_id) {
 		const buff_img = document.getElementById("buff_img_"+buff_id);
-		if (buff_img.value == 0) {
-			buff_img.value = 1;
+		if (buff_img.dataset.selected == 0) {
+			buff_img.dataset.selected = 1;
 			buff_img.classList.remove("greyed");
 		} else {
-			buff_img.value = 0;
+			buff_img.dataset.selected = 0;
 			buff_img.classList.add("greyed");
 		}
 	}
@@ -880,12 +878,12 @@
 			}
 		});
 	});
-
+	showbuffstart();
 	document.getElementById("icon_1").addEventListener("click", loadMenuOptions(1));
 	document.getElementById("icon_2").addEventListener("click", loadMenuOptions(2));
 
-	const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
-	const tooltipList = [...tooltipTriggerList].map(el => new bootstrap.Tooltip(el));
+	// const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+	// const tooltipList = [...tooltipTriggerList].map(el => new bootstrap.Tooltip(el));
 
 </script>
 
