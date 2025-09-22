@@ -718,7 +718,7 @@
 
 			const title = document.createElement("div");
 			title.classList.add("battle-round-title");
-			title.textContent = `${round.nbr_of_crit} crit and ${round.nbr_of_block} block it has ${round.proba*100}% chance to happen`;
+			title.textContent = `${round.nbr_of_crit} crit and ${round.nbr_of_block} block it has ${(round.proba*100).toFixed(2)}% chance to happen`;
 			roundDiv.appendChild(title);
 
 			const hpBarContainer = document.createElement("div");

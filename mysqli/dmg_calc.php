@@ -123,6 +123,8 @@ for ($i = 0; $i <= $nbr_hit; $i++) {
 	$nbr_of_crit = $i;
 	for ($y = 0; $y <= $nbr_hit; $y++) {
 		$nbr_of_block = $y;
+		if($block_chance == 0 && $nbr_of_block > 0) {continue;}
+		if($crit_chance == 0 && $nbr_of_crit > 0) {continue;}
 
 		// ./DoesItKill.py dmg nbr_hit per vie armor nbr_crit = 0 c_crit=0 d_crit=0 nbr_bloc=0 c_bloc = 0 v_bloc = 0 d_ampli = 0 multi = 1
 		// ./DoesItKill.py 30 2 0.3 200 20 1 0.25 12	
@@ -142,7 +144,7 @@ for ($i = 0; $i <= $nbr_hit; $i++) {
 		$thisround['min_dmg'] = $python_array['tdmg'][0];
 		$thisround['med_dmg'] = $python_array['tdmg'][1];
 		$thisround['max_dmg'] = $python_array['tdmg'][2];
-		$thisround['proba'] = $python_array['proba'];
+		$thisround['proba'] = round($python_array['proba'], 4);
 
 		$thisround['hp_min_dmg'] = $thisround['start_hp']-$python_array['tdmg'][0];
 		$thisround['hp_med_dmg'] = $thisround['start_hp']-$python_array['tdmg'][1];
@@ -166,7 +168,11 @@ for ($i = 0; $i <= $nbr_hit; $i++) {
 		
 		$thisround['affichage_hp_max_dmg'] = $thisround['hp_min_dmg'] / $thisround['start_hp'] * 100 - $thisround['affichage_hp_med_dmg'] - $thisround['affichage_hp_min_dmg'];
 		
-		$round[] = $thisround;
+		if($thisround['proba']>0)
+		{
+			$round[] = $thisround;
+		}
+		
 	}
 
 }

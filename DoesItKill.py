@@ -8,60 +8,60 @@ import json
 
 def hit(dmg, per, vie, armor, c_crit, d_crit, c_bloc = 0, v_bloc = 0, d_ampli = 0, multi = 1):
 	# without crit
+	# min
 	mindmg_wbloc = max( int((dmg * 0.8 + d_ampli) * per), int(dmg * 0.8) + d_ampli - armor) * multi - v_bloc
-	proba_min_wbloc = 0.5 * (1 - c_crit) * c_bloc
+
 	mindmg_obloc = max( int((dmg * 0.8 + d_ampli) * per), int(dmg * 0.8) + d_ampli - armor) * multi
-	proba_min_obloc = 0.5 * (1 - c_crit) * (1-c_bloc)
-	
+
+	#med
+	dmg_wbloc = max(int((dmg + d_ampli) * per), int( dmg + d_ampli - armor)) * multi - v_bloc
+
+	dmg_obloc = max(int((dmg + d_ampli) * per), int( dmg + d_ampli - armor)) * multi
+
+	#max
 	maxdmg_wbloc = max( int((dmg * 1.2 + d_ampli) * per), int(dmg * 1.2) + d_ampli - armor) * multi - v_bloc
-	proba_max_wbloc = 0.5 * (1 - c_crit) * c_bloc
+
 	maxdmg_obloc = max( int((dmg * 1.2 + d_ampli) * per), int(dmg * 1.2) + d_ampli - armor) * multi
-	proba_max_obloc = 0.5 * (1 - c_crit) * (1-c_bloc)
+
 
 	# with crit
+	#min
 	mindmg_wcrit_wbloc = max( int(dmg * 0.8 + d_crit + d_ampli )* per, (int(dmg*0.8) + d_crit + d_ampli - armor)) * multi - v_bloc
-	proba_min_crit_wbloc = 0.5 * c_crit * c_bloc
+
 	mindmg_wcrit_obloc = max( int(dmg * 0.8 + d_crit + d_ampli )* per, (int(dmg*0.8) + d_crit + d_ampli - armor)) * multi
-	proba_min_crit_obloc = 0.5 * c_crit * (1-c_bloc)
 	
-	maxdmg_wcrit_wbloc = max( int(dmg * 1.2 + d_crit + d_ampli )* per, (int(dmg*1.2) + d_crit + d_ampli - armor)) * multi - v_bloc
-	proba_max_crit_wbloc = 0.5 * c_crit * c_bloc
-	maxdmg_wcrit_obloc = max( int(dmg * 1.2 + d_crit + d_ampli )* per, (int(dmg*1.2) + d_crit + d_ampli - armor)) * multi - v_bloc
-	proba_max_crit_obloc = 0.5 * c_crit * (1-c_bloc)
+	#med
+	dmg_wcrit_wbloc = max( int((dmg + d_ampli + d_crit) * per), ( dmg + d_ampli + d_crit - armor)) * multi - v_bloc
 
-	# dmg median
+	dmg_wcrit_obloc = max( int((dmg + d_ampli + d_crit) * per), ( dmg + d_ampli + d_crit - armor)) * multi
 
-	dmg_wbloc = max(int((dmg + d_ampli) * per), int( dmg + d_ampli - armor)) * multi - v_bloc
-	proba_wbloc = (1 - c_crit) * c_bloc
-	dmg_obloc = max(int((dmg + d_ampli) * per), int( dmg + d_ampli - armor)) * multi
-	proba_obloc = (1 - c_crit) * (1-c_bloc)
+	#max
+	maxdmg_wcrit_wbloc = max( int((dmg * 1.2 + d_crit + d_ampli )* per), (int(dmg*1.2) + d_crit + d_ampli - armor)) * multi - v_bloc
 
-	dmg_wcrit_wbloc = max(int((dmg + d_ampli + d_crit) * per), int( dmg + d_ampli + d_crit)) * multi - v_bloc
-	proba_crit_wbloc = c_crit * c_bloc
-	dmg_wcrit_obloc = max(int((dmg + d_ampli + d_crit) * per), int( dmg + d_ampli + d_crit)) * multi
-	proba_crit_obloc = c_crit * (1-c_bloc)
-	
-
-	#if round(proba_min_wbloc + proba_min_obloc + proba_max_wbloc + proba_max_obloc + proba_min_crit_wbloc + proba_min_crit_obloc + proba_max_crit_wbloc + proba_max_crit_obloc) == 1 :
-	#   print('stat ok')
-	#else:
-	#   print('stat pas ok')
-
-		
-	#print("""les degats on {}% de chance d'être entre [{},{}]
-	#les degats on {}% de chance d'être entre [{},{}]
-	#les degats on {}% de chance d'être entre [{},{}]
-	#les degats on {}% de chance d'être entre [{},{}]""".format( proba_wbloc * 100, mindmg_wbloc,maxdmg_wbloc,proba_obloc * 100,mindmg_obloc,maxdmg_obloc, proba_crit_wbloc * 100,mindmg_wcrit_wbloc,maxdmg_wcrit_wbloc,proba_crit_obloc * 100,mindmg_wcrit_obloc,maxdmg_wcrit_obloc))
+	maxdmg_wcrit_obloc = max( int((dmg * 1.2 + d_crit + d_ampli )* per), (int(dmg*1.2) + d_crit + d_ampli - armor)) * multi
 
 	
 	
 	return ([mindmg_obloc,dmg_obloc,maxdmg_obloc],[mindmg_wbloc,dmg_wbloc,maxdmg_wbloc],[mindmg_wcrit_obloc,dmg_wcrit_obloc,maxdmg_wcrit_obloc],[mindmg_wcrit_wbloc,dmg_wcrit_wbloc,maxdmg_wcrit_wbloc])
+
+	
 
 def multihit(dmg, nbr_hit, per, vie, armor, nbr_crit = 0, c_crit=0, d_crit=0, nbr_bloc=0, c_bloc = 0, v_bloc = 0, d_ampli = 0, multi = 1):
 	hit_crit_bloc = 0
 	hit_crit = 0
 	hit_bloc = 0
 	hit_normal = 0
+
+	if nbr_hit == nbr_crit and nbr_hit == nbr_bloc:
+		proba = (c_crit ** nbr_hit) * (c_bloc ** nbr_hit)
+	elif nbr_hit == nbr_crit:
+		proba = (c_crit ** nbr_hit) * (c_bloc ** nbr_bloc) * (1-c_bloc)
+	elif nbr_hit == nbr_bloc:
+		proba = (c_crit ** nbr_crit) * (1-c_crit) * (c_bloc ** nbr_hit)
+	else:
+		proba = (c_crit ** nbr_crit) * (1-c_crit) * (c_bloc ** nbr_bloc) * (1-c_bloc)
+
+		
 	for i in range(0,nbr_hit):
 		if nbr_crit != 0 and nbr_bloc != 0:
 			hit_crit_bloc += 1
@@ -75,19 +75,10 @@ def multihit(dmg, nbr_hit, per, vie, armor, nbr_crit = 0, c_crit=0, d_crit=0, nb
 			nbr_bloc-=1
 		else:
 			hit_normal += 1
-			
+
 	normal, bloc, crit, crit_bloc = hit(dmg, per, vie, armor, c_crit, d_crit, c_bloc, v_bloc, d_ampli, multi)
 	tdmg = [ crit_bloc[0]*hit_crit_bloc + crit[0]*hit_crit + bloc[0]*hit_bloc + normal[0]*hit_normal, crit_bloc[1]*hit_crit_bloc + crit[1]*hit_crit + bloc[1]*hit_bloc + normal[1]*hit_normal, crit_bloc[2]*hit_crit_bloc + crit[2]*hit_crit + bloc[2]*hit_bloc + normal[2]*hit_normal ]
 	
-	if nbr_hit == nbr_crit and nbr_hit == nbr_bloc:
-		proba = (c_crit ** nbr_hit) * (c_bloc ** nbr_hit)
-	elif nbr_hit == nbr_crit:
-		proba = (c_crit ** nbr_hit) * (c_bloc ** nbr_bloc) * (1-c_bloc)
-	elif nbr_hit == nbr_bloc:
-		proba = (c_crit ** nbr_crit) * (1-c_crit) * (c_bloc ** nbr_hit)
-	else:
-		proba = (c_crit ** nbr_crit) * (1-c_crit) * (c_bloc ** nbr_bloc) * (1-c_bloc)
-
 	
 	return tdmg,proba
 
