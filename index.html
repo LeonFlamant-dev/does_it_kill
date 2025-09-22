@@ -76,6 +76,10 @@
 		bottom: 80px;
 		left: 135px;
 	}
+	.top-left {
+		bottom: 20px;
+		left: 20px;
+	}
 	.bottom-left-panel {
 		bottom: 50px;
 		left: 260px;
@@ -173,6 +177,35 @@
 		max-width: 50px;
 		max-height: 50px;
 		margin-right: 10px;
+	}
+	.buff-panel {
+		position: absolute;
+		width: 600px;
+		padding: 15px;
+		background: rgb(255, 255, 255);
+		border-left: 1px solid #ccc;
+		box-shadow: -2px 0 6px rgba(0,0,0,0.1);
+		display: block;
+		border-radius: 6px;
+		max-height: 400px;
+		overflow: scroll;
+	}
+	.buff-images img {
+		max-width: 50px;
+		max-height: 50px;
+		margin-right: 10px;
+	}
+	.buff-images {
+		margin-top: 15px;
+	}
+	.stats-row {
+		display: flex;
+		justify-content: space-between;
+		align-items: flex-start;
+	}
+	.greyed {
+		filter: grayscale(100%);
+		transition: filter 0.5s ease; /* smooth fade */
 	}
 	.dropdown {
 		border: 1px solid #ccc;
@@ -333,13 +366,18 @@
 	<div class="center-area">
 		<h1></h1>
 
+		<!-- buff panel on top left -->
+		<div id="buffPanel" class="buff-panel top-left">
+			
 
-<!-- <button type="button" class="btn btn-secondary" data-toggle="tooltip" data-placement="top" title="Tooltip on top"></button> -->
+		</div>
 		
-			<img id="icon_1" src="img/perso/noperso/icon.png" alt="Left Image" class="clickable-img bottom-left"  onclick="showDropdown(1)" 
-			data-bs-toggle="tooltip" 
-			data-bs-placement="top" 
-			title="">
+
+		<!-- Bottom-left image named 1 -->
+		<img id="icon_1" src="img/perso/noperso/icon.png" alt="Left Image" class="clickable-img bottom-left"  onclick="showDropdown(1)" 
+		data-bs-toggle="tooltip" 
+		data-bs-placement="top" 
+		title="">
 
 
 		<!-- Menu déroulant selection perso (caché par défaut) -->
@@ -556,7 +594,37 @@
 		});
 	}
 
-	
+	async function showbuffstart() {// peut etre lancer ca que apres que on a le perso et le palier a voir??
+		let response = await fetch("mysqli/get_buff.php?palier=" + palier_nom);
+		let data = await response.json();
+		const buff_container = document.getElementById("buffPanel");
+		buff_container.innerHTML = '<div class="buff-images">';
+		let length_row = 0;
+		for (const buff of data) {
+			if(length_row == 0){
+				buff_container.innerHTML +='<div class="stat-with-number">';
+			}
+			buff_container.innerHTML +='<img id="buff_img_'+buff.id+'" data-selected="0" class="greyed" data-bs-toggle="tooltip" data-bs-placement="top" title="'+buff.description+'" alt="'+buff.nom+'" src="img/'+buff.locate+'.png" onclick="selectbuff('+buff.id+')" style="cursor:pointer;">';
+			length_row++;
+			if(length_row > 10){
+				buff_container.innerHTML +='</div>';
+				length_row = 0;
+			}
+		}
+		buff_container.innerHTML +='</div>';
+	}
+
+	function getSelectedBuffs() {
+		const selected = [];
+		const buff_imgs = document.querySelectorAll("#buffPanel img");
+		buff_imgs.forEach(img => {
+			if (img.getAttribute("data-selected") === "1") {
+				const buff_id = img.id.replace("buff_img_", "");
+				selected.push(buff_id);
+			}
+		});
+		return selected;
+	}
 
 	function showDropdown(img_id) {
 		document.getElementById("dropdownMenu_perso_"+img_id).style.display = "none";
@@ -676,6 +744,9 @@
 		const perso_defenceur = document.getElementById("menuSelect_perso_2").value;
 		const hp_defenceur = document.getElementById("hp_input_2").value; // for now 1 always attack and 2 always defence (tochange later)
 		const armor_defenceur = document.getElementById("armor_input_2").value
+		const buffs = getSelectedBuffs();
+		jsonBuffs = JSON.stringify(buffs);
+		const encodedBuffs = encodeURIComponent(jsonBuffs);
 		// need to have perso and dmg attackant and perso,hp,armor defenceur
 		if (!perso_attackant || !perso_defenceur) {
 			alert("Please select a character and tier first.");
@@ -704,7 +775,7 @@
 		const encoded_item_id_2 = encodeURIComponent(jsonData2);
 
 
-		let response = await fetch("mysqli/dmg_calc.php?attackant=" + perso_attackant + "&defenceur=" + perso_defenceur + "&attack_type=" + attack_type+ "&dmg=" + dmg_attackant+ "&hp=" + hp_defenceur+ "&armor=" + armor_defenceur+ "&itemsattaquant=" + encoded_item_id_1 + "&itemsdefenceur=" + encoded_item_id_2);
+		let response = await fetch("mysqli/dmg_calc.php?attackant=" + perso_attackant + "&defenceur=" + perso_defenceur + "&attack_type=" + attack_type+ "&dmg=" + dmg_attackant+ "&hp=" + hp_defenceur+ "&armor=" + armor_defenceur+ "&itemsattaquant=" + encoded_item_id_1 + "&itemsdefenceur=" + encoded_item_id_2 + "&buffs=" + encodedBuffs);
 		let data = await response.json();
 
 
@@ -773,6 +844,17 @@
 		const tooltipList = [...tooltipTriggerList].map(el => new bootstrap.Tooltip(el));
 	}
 	
+	function selectbuff(buff_id) {
+		const buff_img = document.getElementById("buff_img_"+buff_id);
+		if (buff_img.value == 0) {
+			buff_img.value = 1;
+			buff_img.classList.remove("greyed");
+		} else {
+			buff_img.value = 0;
+			buff_img.classList.add("greyed");
+		}
+	}
+
 	document.querySelectorAll(".custom-select").forEach(select => {
 		const selected = select.querySelector(".selected");
 		const options = select.querySelector(".options");
