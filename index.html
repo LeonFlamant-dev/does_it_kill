@@ -80,6 +80,10 @@
 		top: 20px;
 		left: 20px;
 	}
+	.bottom-right {
+		bottom: 20px;
+		right: 20px;
+	}
 	.bottom-left-panel {
 		bottom: 50px;
 		left: 260px;
@@ -363,11 +367,8 @@
 		<h1></h1>
 
 		<!-- buff panel on top left -->
-		<div id="buffPanel" class="buff-panel top-left">
-			
-
-		</div>
-		
+		<div id="buffPanel" class="buff-panel top-left"></div>
+		<div id="debuffPanel" class="buff-panel bottom-right"></div>
 
 		<!-- Bottom-left image named 1 -->
 		<img id="icon_1" src="img/perso/noperso/icon.png" alt="Left Image" class="clickable-img bottom-left"  onclick="showDropdown(1)" 
@@ -594,17 +595,34 @@
 		let response = await fetch("mysqli/get_buff.php");
 		let data = await response.json();
 		const buff_container = document.getElementById("buffPanel");
+		const debuff_container = document.getElementById("debuffPanel");
 		buff_container.innerHTML = '<div class="buff-images">';
-		let length_row = 0;
+		debuff_container.innerHTML = '<div class="buff-images">';
+		let buff_length_row = 0;
+		let debuff_length_row = 0;
 		for (const buff of data) {
-			if(length_row == 0){
-				buff_container.innerHTML +='<div class="stat-with-number">';
+			if(buff.type == 'buff'){
+				if(buff_length_row == 0){
+					buff_container.innerHTML +='<div class="stat-with-number">';
+				}
+				buff_container.innerHTML +='<img id="buff_img_'+buff.id+'" data-selected="0" class="greyed buff-images" data-bs-toggle="tooltip" data-bs-placement="top" title="'+buff.prettyname+' : '+buff.description+'" alt="'+buff.nom+'" src="img/'+buff.locate+'.png" onclick="selectbuff('+buff.id+')" style="cursor:pointer;">';
+				buff_length_row++;
+				if(buff_length_row > 10){
+					buff_container.innerHTML +='</div>';
+					buff_length_row = 0;
+				}
 			}
-			buff_container.innerHTML +='<img id="buff_img_'+buff.id+'" data-selected="0" class="greyed buff-images" data-bs-toggle="tooltip" data-bs-placement="top" title="'+buff.prettyname+' : '+buff.description+'" alt="'+buff.nom+'" src="img/'+buff.locate+'.png" onclick="selectbuff('+buff.id+')" style="cursor:pointer;">';
-			length_row++;
-			if(length_row > 10){
-				buff_container.innerHTML +='</div>';
-				length_row = 0;
+			else if(buff.type == 'debuff'){
+				
+				if(debuff_length_row == 0){
+					debuff_container.innerHTML +='<div class="stat-with-number">';
+				}
+				debuff_container.innerHTML +='<img id="buff_img_'+buff.id+'" data-selected="0" class="greyed buff-images" data-bs-toggle="tooltip" data-bs-placement="top" title="'+buff.prettyname+' : '+buff.description+'" alt="'+buff.nom+'" src="img/'+buff.locate+'.png" onclick="selectbuff('+buff.id+')" style="cursor:pointer;">';
+				debuff_length_row++;
+				if(debuff_length_row > 10){
+					debuff_container.innerHTML +='</div>';
+					debuff_length_row = 0;
+				}
 			}
 		}
 		buff_container.innerHTML +='</div>';

@@ -13,7 +13,7 @@ if (mysqli_connect_errno()) {
 
 	die("Erreur connexion: " . mysqli_connect_error());
 }
-$result = mysqli_query($mysqli, "SELECT b.id, b.name, b.prettyname, b.description, b.locate FROM buff b where b.type='buff';");
+$result = mysqli_query($mysqli, "SELECT b.id, b.name, b.prettyname, b.description, b.locate, b.type FROM buff b WHERE b.type='buff' OR b.type='debuff';");
 
 $characters = [];
 while ($row = mysqli_fetch_assoc($result)) {
