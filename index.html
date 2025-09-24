@@ -81,7 +81,7 @@
 		left: 20px;
 	}
 	.bottom-right {
-		bottom: 20px;
+		bottom: 60px;
 		right: 20px;
 	}
 	.bottom-left-panel {
@@ -394,6 +394,7 @@
 		<div id="statsPanel_1" class="stats-panel bottom-left-panel">
 			<div class="stats-row">
 				<div class="stats-line" id="hp_id_1">0</div>
+				<img id="palier_faction_1" alt="faction" class="panel-icon">
 				<img id="palier_img_1" alt="icon" class="panel-icon">
 			</div>
 			<div class="stats-row">
@@ -477,6 +478,7 @@
 		<div id="statsPanel_2" class="stats-panel top-right-panel">
 			<div class="stats-row">
 				<div class="stats-line" id="hp_id_2">0</div>
+				<img id="palier_faction_2" alt="faction" class="panel-icon">
 				<img id="palier_img_2" alt="icon" class="panel-icon">
 			</div>
 			<div class="stats-row">
@@ -630,15 +632,23 @@
 		const tooltipList = [...tooltipTriggerList].map(el => new bootstrap.Tooltip(el));
 	}
 
+
 	function getSelectedBuffs() {
 		const selected = [];
-		const buff_imgs = document.querySelectorAll("#buffPanel img");
+		// find all imgs inside buffPanel with data-selected="1"
+		const buff_imgs = document.querySelectorAll("#buffPanel img[data-selected='1']");
+		const debuff_imgs = document.querySelectorAll("#debuffPanel img[data-selected='1']");
+
 		buff_imgs.forEach(img => {
-			if (img.getAttribute("data-selected") === "1") {
-				const buff_id = img.id.replace("buff_img_", "");
-				selected.push(buff_id);
-			}
+			const buff_id = img.id.replace("buff_img_", "");
+			selected.push(buff_id);
 		});
+
+		debuff_imgs.forEach(img => {
+			const buff_id = img.id.replace("buff_img_", "");
+			selected.push(buff_id);
+		});
+
 		return selected;
 	}
 
@@ -694,7 +704,8 @@
 			document.getElementById("attack_mele_nbr_"+img_id).innerText = data.nbr_hit_mele;
 
 			document.getElementById("palier_img_"+img_id).src = "img/palier/" + palier_nom + ".png";
-
+			document.getElementById("palier_faction_"+img_id).src = "img/faction/" + data.faction + ".png";
+			document.getElementById("palier_faction_"+img_id).value = data.faction;
 			//img active btn 
 			if(img_id == 1)
 			{
@@ -755,16 +766,30 @@
 
 	async function calcule_dmg(attack_type) {
 		// attack_type: 1 = mele, 2 = range, 3 = active
-		const perso_attackant = document.getElementById("menuSelect_perso_1").value;
-		const dmg_attackant = document.getElementById("dmg_input_1").value;
-		const perso_defenceur = document.getElementById("menuSelect_perso_2").value;
-		const hp_defenceur = document.getElementById("hp_input_2").value; // for now 1 always attack and 2 always defence (tochange later)
-		const armor_defenceur = document.getElementById("armor_input_2").value
+		const perso_attaque = document.getElementById("menuSelect_perso_1").value;
+		const dmg_attaque = document.getElementById("dmg_input_1").value;
+		const palier_attaque = document.getElementById("palierValue_1").value;
+		const faction_attaque = document.getElementById("palier_faction_1").value;
+		const perso_attaque_array = [perso_attaque,attack_type,dmg_attaque,palier_attaque,faction_attaque];
+		const jsonData_atk = JSON.stringify(perso_attaque_array);
+		const encoded_atk = encodeURIComponent(jsonData_atk);
+
+		const perso_defence = document.getElementById("menuSelect_perso_2").value;
+		const hp_defence = document.getElementById("hp_input_2").value; // for now 1 always attack and 2 always defence (tochange later)
+		const armor_defence = document.getElementById("armor_input_2").value
+		const palier_defence = document.getElementById("palierValue_2").value;
+		const faction_defence = document.getElementById("palier_faction_2").value;
+		const perso_defence_array = [perso_defence,hp_defence,armor_defence,palier_defence,faction_defence];
+		const jsonData_def = JSON.stringify(perso_defence_array);
+		const encoded_def = encodeURIComponent(jsonData_def);
+
+
+
 		const buffs = getSelectedBuffs();
 		jsonBuffs = JSON.stringify(buffs);
 		const encodedBuffs = encodeURIComponent(jsonBuffs);
-		// need to have perso and dmg attackant and perso,hp,armor defenceur
-		if (!perso_attackant || !perso_defenceur) {
+		// need to have perso and dmg attaque and perso,hp,armor defence
+		if (!perso_attaque || !perso_defence) {
 			alert("Please select a character and tier first.");
 			return;
 		}
@@ -791,7 +816,7 @@
 		const encoded_item_id_2 = encodeURIComponent(jsonData2);
 
 
-		let response = await fetch("mysqli/dmg_calc.php?attackant=" + perso_attackant + "&defenceur=" + perso_defenceur + "&attack_type=" + attack_type+ "&dmg=" + dmg_attackant+ "&hp=" + hp_defenceur+ "&armor=" + armor_defenceur+ "&itemsattaquant=" + encoded_item_id_1 + "&itemsdefenceur=" + encoded_item_id_2 + "&buffs=" + encodedBuffs);
+		let response = await fetch("mysqli/dmg_calc.php?attaque=" + encoded_atk + "&defence=" + encoded_def + "&itemsattaquant=" + encoded_item_id_1 + "&itemsdefence=" + encoded_item_id_2 + "&buffs=" + encodedBuffs);
 		let data = await response.json();
 
 
