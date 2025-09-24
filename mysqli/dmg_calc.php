@@ -1,5 +1,6 @@
 <?php
-
+// error_reporting(E_ALL);
+// ini_set('display_errors', 1);
 $config = parse_ini_file("../conf.ini", true);
 
 // dmg_calc.php?attaque=" + encoded_atk + "&defence=" + encoded_def + "&itemsattaquant=" + encoded_item_id_1 + "&itemsdefence=" + encoded_item_id_2 + "&buffs=" + encodedBuffs
@@ -9,7 +10,7 @@ $config = parse_ini_file("../conf.ini", true);
 // buffs = [1,2,3]
 $data_perso_atk = json_decode($_GET['attaque'], true); 
 $data_perso_def = json_decode($_GET['defence'], true); 
-switch ($data_perso_def[1]) {
+switch ($data_perso_atk[1]) {
 	case "1":
 		$attack_type = "mele";
 		break;
@@ -116,63 +117,72 @@ $dmg_amp = 0;
 $multiplicateur = 1;
 
 $buffs = json_decode($_GET['buffs'], true); 
-$query_buff = "SELECT b.descript, a.X, a.Y, a.Z FROM buff b LEFT JOIN ability_stat a ON b.name = a.name AND a.palier = '".$data_perso_atk[3]."' WHERE id IN (".implode(',', $buffs).")";
-$result_buff = mysqli_query($mysqli,$query_buff );
-while ($row = mysqli_fetch_assoc($result_buff)) {
-	$row['descript'] = str_replace(
-		['X', 'Y', 'Z'],
-		[$row['X'], $row['Y'], $row['Z']],
-		$row['descript']
-	);
+if($buffs != null)
+{
+	$query_buff = "SELECT b.descript, a.X, a.Y, a.Z FROM buff b LEFT JOIN ability_stat a ON b.name = a.name AND a.palier = '".$data_perso_atk[3]."' WHERE b.id IN (".implode(',', $buffs).")";
+	$result_buff = mysqli_query($mysqli,$query_buff );
+	while ($row = mysqli_fetch_assoc($result_buff)) {
+		$attaque_desc = str_replace(
+			['X', 'Y', 'Z'],
+			[$row['X'], $row['Y'], $row['Z']],
+			$row['descript']
+		);
 
-	$attaque_desc = explode(' ',$attaque_desc);
-	$indice = 0;
-	// while($indice < count($attaque_desc)) 
-	//je sais pas si on a besoin de ca vus que on fais un seul tour je sais pas si un buff peut buff plusieur fois dans ce cas oui mais comment je dif un buf de faction ou de mele d'un multibuff (new type allpersomultibuff ?)
-	// {
-		if($attaque_desc[$indice] != 'allperso' && $attaque_desc[$indice] != $data_perso_atk[4])
-		{
-			while($attaque_desc[$indice] != ',' && $indice < count($attaque_desc))
+		$attaque_desc = explode(' ',$attaque_desc);
+		$taille_attaque = count($attaque_desc);
+		for($indice = 0; $indice < $taille_attaque; $indice++) {
+			if($attaque_desc[$indice] != 'allperso' && $attaque_desc[$indice] != $data_perso_atk[4])
 			{
-				$indice++;
+
+				while($attaque_desc[$indice] != ',' && $indice < $taille_attaque)
+				{
+					$indice++;
+				}
+				continue;
 			}
-		}
-		$indice++;
-		if($indice >= count($attaque_desc)) {break;}
-		if($attaque_desc[$indice] != 'alltype' && ($attaque_desc[$indice] != $attack_type || ($attaque_desc[$indice] == 'n_attaque' && $attack_type == 'active')))
-		{
-			while($attaque_desc[$indice] != ',' && $indice < count($attaque_desc))
+			$indice++;
+
+			if($indice >= $taille_attaque) {break;}
+			if($attaque_desc[$indice] != 'alltype' && ($attaque_desc[$indice] != $attack_type && ($attaque_desc[$indice] == 'n_attaque' && $attack_type == 'active')))
 			{
-				$indice++;
+
+				while($attaque_desc[$indice] != ',' && $indice < $taille_attaque)
+				{
+					$indice++;
+				}
+				continue;
 			}
+			if($indice >= $taille_attaque) {break;}
+			$indice++;
+
+
+			switch ($attaque_desc[$indice]) {
+				case "mult":
+					$multiplicateur+= $attaque_desc[$indice+1]; 
+					$indice+=2;
+					break;
+				case "deal":
+					$dmg+= $attaque_desc[$indice+1]+0; 
+					$indice+=2;
+					break;
+				case "take":
+					$dmg_amp+= $attaque_desc[$indice+1]+0; 
+					$indice+=2;
+					break;
+				case "add_hit":
+					$nbr_hit+= $attaque_desc[$indice+1]+0; 
+					$indice+=2;
+					break;
+				default:
+					$indice++;
+					break;
+			}
+			break;
 		}
-		if($indice >= count($attaque_desc)) {break;}
+		
+	}
+} 
 
-
-
-		switch ($$attaque_desc[$indice]) {
-			case "mult":
-				$multiplicateur+= $attaque_desc[$indice+1]+0; 
-				$indice+=2;
-				break;
-			case "deal":
-				$dmg+= $attaque_desc[$indice+1]+0; 
-				$indice+=2;
-				break;
-			case "take":
-				$dmg_amp+= $attaque_desc[$indice+1]+0; 
-				$indice+=2;
-				break;
-			case "add_hit":
-				$nbr_hit+= $attaque_desc[$indice+1]+0; 
-				$indice+=2;
-				break;
-			default:
-				$indice++;
-				break;
-		}
-	// }
-}
 
 $round = [];
 
