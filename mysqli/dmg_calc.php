@@ -199,7 +199,7 @@ for ($i = 0; $i <= $nbr_hit; $i++) {
 		// ./DoesItKill.py dmg nbr_hit per vie armor nbr_crit = 0 c_crit=0 d_crit=0 nbr_bloc=0 c_bloc = 0 v_bloc = 0 d_ampli = 0 multi = 1
 		// ./DoesItKill.py 30 2 0.3 200 20 1 0.25 12	
 
-		// echo './../DoesItKill.py '.$_GET['dmg'].' '.$nbr_hit.' '.$attaque_stats['per_perfo'].' '.$hp.' '.$armor.' '.$nbr_of_crit.' '.$crit_chance.' '.$crit_value.' '.$nbr_of_block.' '.$block_chance.' '.$block_value.' '.$dmg_amp.' '.$multiplicateur;
+		// echo 'DoesItKill.py '.$dmg.' '.$nbr_hit.' '.$attaque_stats['per_perfo'].' '.$hp.' '.$armor.' '.$nbr_of_crit.' '.$crit_chance.' '.$crit_value.' '.$nbr_of_block.' '.$block_chance.' '.$block_value.' '.$dmg_amp.' '.$multiplicateur;
 		// exit;
 		$retour_string = shell_exec('./../DoesItKill.py '.$dmg.' '.$nbr_hit.' '.$attaque_stats['per_perfo'].' '.$hp.' '.$armor.' '.$nbr_of_crit.' '.$crit_chance.' '.$crit_value.' '.$nbr_of_block.' '.$block_chance.' '.$block_value.' '.$dmg_amp.' '.$multiplicateur);
 		// { "tdmg" : [0,0,0] , "proba" : 0 }

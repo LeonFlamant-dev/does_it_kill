@@ -103,7 +103,7 @@ if __name__ == "__main__":
 	c_bloc = float(sys.argv[10]) if len(sys.argv) > 10 else 0
 	v_bloc = int(sys.argv[11]) if len(sys.argv) > 11 else 0
 	d_ampli = int(sys.argv[12]) if len(sys.argv) > 12 else 0
-	multi = int(sys.argv[13])  if len(sys.argv) > 13 else 1
+	multi = float(sys.argv[13])  if len(sys.argv) > 13 else 1
 
 	tdmg, proba = multihit(dmg, nbr_hit, per, vie, armor, nbr_crit, c_crit, d_crit, nbr_bloc, c_bloc, v_bloc, d_ampli, multi)
 
