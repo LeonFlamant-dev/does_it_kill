@@ -122,6 +122,10 @@ if($buffs != null)
 	$query_buff = "SELECT b.descript, a.X, a.Y, a.Z FROM buff b LEFT JOIN ability_stat a ON b.name = a.name AND a.palier = '".$data_perso_atk[3]."' WHERE b.id IN (".implode(',', $buffs).")";
 	$result_buff = mysqli_query($mysqli,$query_buff );
 	while ($row = mysqli_fetch_assoc($result_buff)) {
+		if($row['descript'] == '') {continue;}
+		if($row['X'] === null) {$row['X'] = 0;}
+		if($row['Y'] === null) {$row['Y'] = 0;}
+		if($row['Z'] === null) {$row['Z'] = 0;}
 		$attaque_desc = str_replace(
 			['X', 'Y', 'Z'],
 			[$row['X'], $row['Y'], $row['Z']],

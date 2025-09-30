@@ -19,6 +19,23 @@
 	body, html {
 		height: 100%;
 		margin: 0;
+		min-width: 1200px;
+		min-height: 600px;
+		overflow: auto;
+	}
+	.dev-header {
+		position: fixed;
+		top: 0;
+		left: 0;
+		width: 100%;
+		padding: 1vh 2vw;
+		background: rgba(255, 193, 7, 0.9); /* jaune translucide */
+		color: #000;
+		text-align: center;
+		font-weight: bold;
+		font-size: 1.2em;
+		z-index: 1000;
+		box-shadow: 0 2px 5px rgba(0,0,0,0.3);
 	}
 	.main-container {
 		display: flex;
@@ -147,6 +164,15 @@
 		display: none;
 		border-radius: 6px;
 	}
+	.close-btn {
+		position: absolute;
+		top: 10px;
+		left: 10px;
+		border: none;
+		background: none;
+		font-size: 20px;
+		cursor: pointer;
+	}
 	.stats-row {
 		display: flex;
 		justify-content: space-between;
@@ -160,15 +186,27 @@
 		color: #000000;
 		font-weight: bold;
 	}
+	.numberbox {
+		width: 70px;
+	}
 	.stats-images {
 		margin-top: 15px;
+	}
+	.mini-icon {
+		height:20px;
+		vertical-align:middle;
 	}
 	.stat-with-number {
 		display: flex;
 		align-items: center;
 		margin-bottom: 10px;
 	}
-	.stat-with-number img {
+	.attaque-type-icon {
+		height:30px;
+		width:30px;
+		vertical-align:middle;
+	}
+	.attaque-icon {
 		width: 50px;
 		margin-right: 10px;
 	}
@@ -195,6 +233,7 @@
 		overflow: scroll;
 	}
 	.buff-images {
+		cursor:pointer;
 		max-width: 50px;
 		max-height: 50px;
 		margin-right: 10px;
@@ -206,6 +245,11 @@
 	}
 	.greyed {
 		filter: grayscale(100%);
+	}
+	.palier_item {
+		height: 16px;
+		margin-right: 5px;
+		vertical-align: middle;
 	}
 	.dropdown {
 		border: 1px solid #ccc;
@@ -351,6 +395,9 @@
 
 </style>
 </head>
+<header class="dev-header">
+  🚧 Cette page est en développement 🚧
+</header>
 <body>
 
 <div class="main-container">
@@ -392,6 +439,7 @@
 
 		<!-- Stats panel -->
 		<div id="statsPanel_1" class="stats-panel bottom-left-panel">
+			<button class="close-btn" onclick="closeStatsPanel(1)">×</button>
 			<div class="stats-row">
 				<div class="stats-line" id="hp_id_1">0</div>
 				<img id="palier_faction_1" alt="faction" class="panel-icon">
@@ -407,13 +455,13 @@
 			<!-- attack stats -->
 			<div class="stats-images">
 				<div class="stat-with-number">
-					<img src="img/stat/mele.png" alt="mele" style="height:30px; width:30px; vertical-align:middle;">
-					<img id="attack_mele_img_1" data-bs-toggle="tooltip" data-bs-placement="top" title="" alt="Small 1">
+					<img src="img/stat/mele.png" alt="mele" class="attaque-type-icon" >
+					<img id="attack_mele_img_1" class="attaque-icon" data-bs-toggle="tooltip" data-bs-placement="top" title="" alt="Small 1">
 					<span id="attack_mele_nbr_1" class="stat-number">0</span>
 				</div>
 				<div class="stat-with-number" id ="attack_range_div_1">
-					<img src="img/stat/range.png" alt="range" style="height:30px; width:30px; vertical-align:middle;">
-					<img id="attack_range_img_1" data-bs-toggle="tooltip" data-bs-placement="top" title="" alt="Small 1">
+					<img src="img/stat/range.png" alt="range" class="attaque-type-icon" >
+					<img id="attack_range_img_1" class="attaque-icon" data-bs-toggle="tooltip" data-bs-placement="top" title="" alt="Small 1">
 					<span id="attack_range_nbr_1" class="stat-number">0</span>
 				</div>
 				<div class="stat-with-number">
@@ -443,14 +491,14 @@
 					</div>
 				</div>
 				<div class="stats-row">
-					<input class="stats-line" type="number" style="width: 70px;" id="item_1_stat_1_id_1"></input>
-					<input class="stats-line" type="number" style="width: 70px;" id="item_2_stat_1_id_1"></input>
-					<input class="stats-line" type="number" style="width: 70px;" id="item_3_stat_1_id_1"></input>
+					<input class="stats-line numberbox" type="number"  id="item_1_stat_1_id_1"></input>
+					<input class="stats-line numberbox" type="number"  id="item_2_stat_1_id_1"></input>
+					<input class="stats-line numberbox" type="number"  id="item_3_stat_1_id_1"></input>
 				</div>
 				<div class="stats-row">
-					<input class="stats-line" type="number" style="width: 70px;" id="item_1_stat_2_id_1"></input>
-					<input class="stats-line" type="number" style="width: 70px;" id="item_2_stat_2_id_1"></input>
-					<input class="stats-line" type="number" style="width: 70px;" id="item_3_stat_2_id_1"></input>
+					<input class="stats-line numberbox" type="number"  id="item_1_stat_2_id_1"></input>
+					<input class="stats-line numberbox" type="number"  id="item_2_stat_2_id_1"></input>
+					<input class="stats-line numberbox" type="number"  id="item_3_stat_2_id_1"></input>
 				</div>
 			</div>
 		</div>
@@ -476,6 +524,7 @@
 
 		<!-- Stats panel -->
 		<div id="statsPanel_2" class="stats-panel top-right-panel">
+			<button class="close-btn" onclick="closeStatsPanel(2)">×</button>
 			<div class="stats-row">
 				<div class="stats-line" id="hp_id_2">0</div>
 				<img id="palier_faction_2" alt="faction" class="panel-icon">
@@ -491,13 +540,13 @@
 			<!-- attack stats -->
 			<div class="stats-images">
 				<div class="stat-with-number">
-					<img src="img/stat/mele.png" alt="mele" style="height:30px; width:30px; vertical-align:middle;">
-					<img id="attack_mele_img_2" data-bs-toggle="tooltip" data-bs-placement="top" title=""  alt="Small 1">
+					<img src="img/stat/mele.png" alt="mele" class="attaque-type-icon">
+					<img id="attack_mele_img_2" class="attaque-icon" data-bs-toggle="tooltip" data-bs-placement="top" title=""  alt="Small 1">
 					<span id="attack_mele_nbr_2" class="stat-number">0</span>
 				</div>
 				<div class="stat-with-number" id ="attack_range_div_2">
-					<img src="img/stat/range.png" alt="range" style="height:30px; width:30px; vertical-align:middle;">
-					<img id="attack_range_img_2" data-bs-toggle="tooltip" data-bs-placement="top" title="" alt="Small 1">
+					<img src="img/stat/range.png" alt="range" class="attaque-type-icon">
+					<img id="attack_range_img_2" class="attaque-icon" data-bs-toggle="tooltip" data-bs-placement="top" title="" alt="Small 1">
 					<span id="attack_range_nbr_2" class="stat-number">0</span>
 				</div>
 				<div>
@@ -527,14 +576,14 @@
 					</div>
 				</div>
 				<div class="stats-row">
-					<input class="stats-line" type="number" style="width: 70px;" id="item_1_stat_1_id_2"></input>
-					<input class="stats-line" type="number" style="width: 70px;" id="item_2_stat_1_id_2"></input>
-					<input class="stats-line" type="number" style="width: 70px;" id="item_3_stat_1_id_2"></input>
+					<input class="stats-line numberbox" type="number" id="item_1_stat_1_id_2"></input>
+					<input class="stats-line numberbox" type="number" id="item_2_stat_1_id_2"></input>
+					<input class="stats-line numberbox" type="number" id="item_3_stat_1_id_2"></input>
 				</div>
 				<div class="stats-row">
-					<input class="stats-line" type="number" style="width: 70px;" id="item_1_stat_2_id_2"></input>
-					<input class="stats-line" type="number" style="width: 70px;" id="item_2_stat_2_id_2"></input>
-					<input class="stats-line" type="number" style="width: 70px;" id="item_3_stat_2_id_2"></input>
+					<input class="stats-line numberbox" type="number" id="item_1_stat_2_id_2"></input>
+					<input class="stats-line numberbox" type="number" id="item_2_stat_2_id_2"></input>
+					<input class="stats-line numberbox" type="number" id="item_3_stat_2_id_2"></input>
 				</div>
 			</div>
 		</div>
@@ -581,7 +630,7 @@
 		palier.forEach(c => {
 			let item = document.createElement("div");
 			item.classList.add("dropdown-item");
-			item.innerHTML = `<img src="img/palier/${c.palier}.png" style="height:16px; margin-right:5px;"> ${c.palier}`;
+			item.innerHTML = `<img src="img/palier/${c.palier}.png" class="palier_item" > ${c.palier}`;
 			
 			item.onclick = () => {
 				// console.log("Selected:", c.palier);
@@ -607,7 +656,7 @@
 				if(buff_length_row == 0){
 					buff_container.innerHTML +='<div class="stat-with-number">';
 				}
-				buff_container.innerHTML +='<img id="buff_img_'+buff.id+'" data-selected="0" class="greyed buff-images" data-bs-toggle="tooltip" data-bs-placement="top" title="'+buff.prettyname+' : '+buff.description+'" alt="'+buff.nom+'" src="img/'+buff.locate+'.png" onclick="selectbuff('+buff.id+')" style="cursor:pointer;">';
+				buff_container.innerHTML +='<img id="buff_img_'+buff.id+'" data-selected="0" class="greyed buff-images" data-bs-toggle="tooltip" data-bs-placement="top" title="'+buff.prettyname+' : '+buff.description+'" alt="'+buff.nom+'" src="img/'+buff.locate+'.png" onclick="selectbuff('+buff.id+')" >';
 				buff_length_row++;
 				if(buff_length_row > 10){
 					buff_container.innerHTML +='</div>';
@@ -619,7 +668,7 @@
 				if(debuff_length_row == 0){
 					debuff_container.innerHTML +='<div class="stat-with-number">';
 				}
-				debuff_container.innerHTML +='<img id="buff_img_'+buff.id+'" data-selected="0" class="greyed buff-images" data-bs-toggle="tooltip" data-bs-placement="top" title="'+buff.prettyname+' : '+buff.description+'" alt="'+buff.nom+'" src="img/'+buff.locate+'.png" onclick="selectbuff('+buff.id+')" style="cursor:pointer;">';
+				debuff_container.innerHTML +='<img id="buff_img_'+buff.id+'" data-selected="0" class="greyed buff-images" data-bs-toggle="tooltip" data-bs-placement="top" title="'+buff.prettyname+' : '+buff.description+'" alt="'+buff.nom+'" src="img/'+buff.locate+'.png" onclick="selectbuff('+buff.id+')" >';
 				debuff_length_row++;
 				if(debuff_length_row > 10){
 					debuff_container.innerHTML +='</div>';
@@ -713,12 +762,12 @@
 			}
 
 			// stats
-			document.getElementById("hp_id_"+img_id).innerHTML = '<img src="img/stat/hp_noir.png" alt="hp" style="height:20px; vertical-align:middle;"> '+
-			`<input type="number" id="hp_input_${img_id}" value="${data.hp}" style="width:70px;">`;
-			document.getElementById("armor_id_"+img_id).innerHTML = '<img src="img/stat/armor_noir.png" alt="armor" style="height:20px; vertical-align:middle;"> '+ 
-			`<input type="number" id="armor_input_${img_id}" value="${data.armor}" style="width:70px;">`;
-			document.getElementById("dmg_id_"+img_id).innerHTML = '<img src="img/stat/dmg_noir.png" alt="dmg" style="height:20px; vertical-align:middle;"> '+ 
-			`<input type="number" id="dmg_input_${img_id}" value="${data.dmg}" style="width:70px;">`;
+			document.getElementById("hp_id_"+img_id).innerHTML = '<img src="img/stat/hp_noir.png" alt="hp" class="mini-icon"> '+
+			`<input type="number" id="hp_input_${img_id}" value="${data.hp}" class="numberbox">`;
+			document.getElementById("armor_id_"+img_id).innerHTML = '<img src="img/stat/armor_noir.png" alt="armor" class="mini-icon"> '+ 
+			`<input type="number" id="armor_input_${img_id}" value="${data.armor}" class="numberbox">`;
+			document.getElementById("dmg_id_"+img_id).innerHTML = '<img src="img/stat/dmg_noir.png" alt="dmg" class="mini-icon"> '+ 
+			`<input type="number" id="dmg_input_${img_id}" value="${data.dmg}" class="numberbox">`;
 
 
 			// afficher traits
@@ -728,7 +777,7 @@
 			for (const nom_trait of traitsArray) {
 				let response_trait = await fetch("mysqli/get_trait_description.php?trait=" + nom_trait);
 				let data_trait = await response_trait.json();
-				trait_container.innerHTML += `<img src="img/trait/${nom_trait}.png" alt="${nom_trait}" data-bs-toggle="tooltip" data-bs-placement="bottom" title="${data_trait.description}" style="height:20px; margin-right:5px;">`;
+				trait_container.innerHTML += `<img src="img/trait/${nom_trait}.png" alt="${nom_trait}" data-bs-toggle="tooltip" data-bs-placement="bottom" title="${data_trait.description}" class="mini-icon">`;
 			}
 
 			//afficher items
@@ -921,6 +970,12 @@
 			}
 		});
 	});
+
+	function closeStatsPanel(id) {
+		console.log("Closing stats panel for id:", id);
+		document.getElementById("statsPanel_"+id).style.display = "none";
+	}
+
 	showbuffstart();
 	document.getElementById("icon_1").addEventListener("click", loadMenuOptions(1));
 	document.getElementById("icon_2").addEventListener("click", loadMenuOptions(2));
