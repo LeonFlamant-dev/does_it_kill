@@ -642,7 +642,7 @@
 		});
 	}
 
-	async function showbuffstart() {// peut etre lancer ca que apres que on a le perso et le palier a voir??
+	async function showbuff() {// need to change by lancer apres palier et changer xyz par les valeurs de stats
 		let response = await fetch("mysqli/get_buff.php");
 		let data = await response.json();
 		const buff_container = document.getElementById("buffPanel");
@@ -972,11 +972,10 @@
 	});
 
 	function closeStatsPanel(id) {
-		console.log("Closing stats panel for id:", id);
 		document.getElementById("statsPanel_"+id).style.display = "none";
 	}
 
-	showbuffstart();
+	showbuff();
 	document.getElementById("icon_1").addEventListener("click", loadMenuOptions(1));
 	document.getElementById("icon_2").addEventListener("click", loadMenuOptions(2));
 

@@ -6,47 +6,57 @@ import json
 
 # deffinition qui simule 1 hit sur quelqu'un 
 
-def hit(dmg, per, vie, armor, c_crit, d_crit, c_bloc = 0, v_bloc = 0, d_ampli = 0, multi = 1):
+def hit(dmg_min,dmg_med,dmg_max, per, vie, armor, c_crit, d_crit, c_bloc = 0, v_bloc = 0, d_ampli = 0, multi = 1):
 	# without crit
 	# min
-	mindmg_wbloc = max( int((dmg * 0.8 + d_ampli) * per), int(dmg * 0.8) + d_ampli - armor) * multi - v_bloc
+	mindmg_wbloc = max( int((dmg_min + d_ampli) * per), dmg_min + d_ampli - armor) * multi - v_bloc
 
-	mindmg_obloc = max( int((dmg * 0.8 + d_ampli) * per), int(dmg * 0.8) + d_ampli - armor) * multi
+	mindmg_obloc = max( int((dmg_min + d_ampli) * per), dmg_min + d_ampli - armor) * multi
 
 	#med
-	dmg_wbloc = max(int((dmg + d_ampli) * per), int( dmg + d_ampli - armor)) * multi - v_bloc
+	dmg_wbloc = max(int((dmg_med + d_ampli) * per), ( dmg_med + d_ampli - armor)) * multi - v_bloc
 
-	dmg_obloc = max(int((dmg + d_ampli) * per), int( dmg + d_ampli - armor)) * multi
+	dmg_obloc = max(int((dmg_med + d_ampli) * per), ( dmg_med + d_ampli - armor)) * multi
 
 	#max
-	maxdmg_wbloc = max( int((dmg * 1.2 + d_ampli) * per), int(dmg * 1.2) + d_ampli - armor) * multi - v_bloc
+	maxdmg_wbloc = max( int((dmg_max + d_ampli) * per), dmg_max + d_ampli - armor) * multi - v_bloc
 
-	maxdmg_obloc = max( int((dmg * 1.2 + d_ampli) * per), int(dmg * 1.2) + d_ampli - armor) * multi
+	maxdmg_obloc = max( int((dmg_max + d_ampli) * per), dmg_max + d_ampli - armor) * multi
 
 
 	# with crit
 	#min
-	mindmg_wcrit_wbloc = max( int(dmg * 0.8 + d_crit + d_ampli )* per, (int(dmg*0.8) + d_crit + d_ampli - armor)) * multi - v_bloc
+	mindmg_wcrit_wbloc = max( int(dmg_min + d_crit + d_ampli )* per, (dmg_min + d_crit + d_ampli - armor)) * multi - v_bloc
 
-	mindmg_wcrit_obloc = max( int(dmg * 0.8 + d_crit + d_ampli )* per, (int(dmg*0.8) + d_crit + d_ampli - armor)) * multi
+	mindmg_wcrit_obloc = max( int(dmg_min + d_crit + d_ampli )* per, (dmg_min + d_crit + d_ampli - armor)) * multi
 	
 	#med
-	dmg_wcrit_wbloc = max( int((dmg + d_ampli + d_crit) * per), ( dmg + d_ampli + d_crit - armor)) * multi - v_bloc
+	dmg_wcrit_wbloc = max( int((dmg_med + d_ampli + d_crit) * per), ( dmg_med + d_ampli + d_crit - armor)) * multi - v_bloc
 
-	dmg_wcrit_obloc = max( int((dmg + d_ampli + d_crit) * per), ( dmg + d_ampli + d_crit - armor)) * multi
+	dmg_wcrit_obloc = max( int((dmg_med + d_ampli + d_crit) * per), ( dmg_med + d_ampli + d_crit - armor)) * multi
 
 	#max
-	maxdmg_wcrit_wbloc = max( int((dmg * 1.2 + d_crit + d_ampli )* per), (int(dmg*1.2) + d_crit + d_ampli - armor)) * multi - v_bloc
+	maxdmg_wcrit_wbloc = max( int((dmg_max + d_crit + d_ampli )* per), (dmg_max + d_crit + d_ampli - armor)) * multi - v_bloc
 
-	maxdmg_wcrit_obloc = max( int((dmg * 1.2 + d_crit + d_ampli )* per), (int(dmg*1.2) + d_crit + d_ampli - armor)) * multi
+	maxdmg_wcrit_obloc = max( int((dmg_max + d_crit + d_ampli )* per), (dmg_max + d_crit + d_ampli - armor)) * multi
 
 	
 	
 	return ([mindmg_obloc,dmg_obloc,maxdmg_obloc],[mindmg_wbloc,dmg_wbloc,maxdmg_wbloc],[mindmg_wcrit_obloc,dmg_wcrit_obloc,maxdmg_wcrit_obloc],[mindmg_wcrit_wbloc,dmg_wcrit_wbloc,maxdmg_wcrit_wbloc])
-
 	
 
 def multihit(dmg, nbr_hit, per, vie, armor, nbr_crit = 0, c_crit=0, d_crit=0, nbr_bloc=0, c_bloc = 0, v_bloc = 0, d_ampli = 0, multi = 1):
+	
+	if isinstance(dmg,list):
+		dmg_min = dmg[0]
+		dmg_med = int((dmg[0] + dmg[1]) /2)
+		dmg_max = dmg[1]
+	else:
+		dmg_min = int(dmg*0.8)
+		dmg_med = dmg
+		dmg_max = int(dmg*1.2)
+	
+	
 	hit_crit_bloc = 0
 	hit_crit = 0
 	hit_bloc = 0
@@ -76,7 +86,7 @@ def multihit(dmg, nbr_hit, per, vie, armor, nbr_crit = 0, c_crit=0, d_crit=0, nb
 		else:
 			hit_normal += 1
 
-	normal, bloc, crit, crit_bloc = hit(dmg, per, vie, armor, c_crit, d_crit, c_bloc, v_bloc, d_ampli, multi)
+	normal, bloc, crit, crit_bloc = hit(dmg_min, dmg_med, dmg_max, per, vie, armor, c_crit, d_crit, c_bloc, v_bloc, d_ampli, multi)
 	tdmg = [ crit_bloc[0]*hit_crit_bloc + crit[0]*hit_crit + bloc[0]*hit_bloc + normal[0]*hit_normal, crit_bloc[1]*hit_crit_bloc + crit[1]*hit_crit + bloc[1]*hit_bloc + normal[1]*hit_normal, crit_bloc[2]*hit_crit_bloc + crit[2]*hit_crit + bloc[2]*hit_bloc + normal[2]*hit_normal ]
 	
 	
@@ -91,7 +101,11 @@ if __name__ == "__main__":
 		print("Usage: ./DoesItKill.py dmg nbr_hit per vie armor [nbr_crit c_crit d_crit nbr_bloc c_bloc v_bloc d_ampli multi]")
 		sys.exit(1)
 
-	dmg = int(sys.argv[1])
+	dmg_arg = sys.argv[1]
+	try:
+		dmg = json.loads(dmg_arg)
+	except json.JSONDecodeError:
+		dmg = int(dmg_arg)  
 	nbr_hit = int(sys.argv[2])
 	per = float(sys.argv[3])
 	vie = int(sys.argv[4])

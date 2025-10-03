@@ -28,23 +28,88 @@ if (mysqli_connect_errno()) {
 }
 
 if($attack_type != 'active') {
-	$query="SELECT p.id, p.nom, p.nbr_hit_".$attack_type.", p.traits, p.faction , ap.per_perfo
+	$query="SELECT p.id, p.nom, p.nbr_hit_".$attack_type.", p.traits, p.faction, p.alliance, ap.per_perfo
 	FROM personnage p  
 	left JOIN atk_perforation ap ON ap.nom = p.perfo_".$attack_type."
 	WHERE p.nom ='".$data_perso_atk[0]."';";
+
+	
+	$result = mysqli_query($mysqli,$query );
+
+	$attaque_stats = [];
+	while ($row = mysqli_fetch_assoc($result)) {
+		$attaque_stats = $row;
+	}
+	$dmg = $data_perso_atk[2];
+	$attaque_perfo = $attaque_stats['per_perfo'];
+	$nbr_hit = $attaque_stats['nbr_hit_'.$attack_type]+0;
+	$alliance = $attaque_stats['alliance'];
+	$traits = json_decode($attaque_stats['traits'],true);
 }
 else {
-	// faire la query pour l'actif du perso
+	// descript : target allperso/trait/alliance deal nombrehit dmg+X dmgtype
+	$query_actif = "SELECT a.descript, s.X, s.Y, s.Z, p.alliance, p.traits FROM ability_descript a LEFT JOIN ability_stat s ON a.ability_name = s.name AND s.palier = '".$data_perso_atk[3]."' LEFT JOIN personnage p ON p.nom = '".$data_perso_atk[0]."' WHERE a.perso = '".$data_perso_atk[0]."' AND a.type = 'active'";
+	$result_actif = mysqli_query($mysqli,$query_actif );
+	while ($row = mysqli_fetch_assoc($result_actif)) {
+		if($row['descript'] == '') {continue;}
+		if($row['X'] === null) {$row['X'] = 0;}
+		if($row['Y'] === null) {$row['Y'] = 0;}
+		if($row['Z'] === null) {$row['Z'] = 0;}
+		$attaque_desc = str_replace(
+			['X', 'Y', 'Z', 'dmg'],
+			[$row['X'], $row['Y'], $row['Z'], $data_perso_atk[2]],
+			$row['descript']
+		);
+		$alliance = $row['alliance'];
+		$traits = json_decode($row['traits'],true);
+		// echo $attaque_desc;
+		// exit;
+		$attaque_desc = explode(' ',$attaque_desc);
+		$taille_attaque = count($attaque_desc);
+		for($indice = 0; $indice < $taille_attaque; $indice++) {
+			if($attaque_desc[$indice] != 'allperso' && $attaque_desc[$indice] != $alliance && !(in_array($attaque_desc[$indice],$traits)))
+			{
+				while($attaque_desc[$indice] != ',' && $indice < $taille_attaque)
+				{
+					$indice++;
+				}
+				continue;
+			}
+			$indice++;
+
+			if($indice >= $taille_attaque) {break;}
 
 
-	// ensuie parsé la reponse pour avoir les info importante
-}
+			switch ($attaque_desc[$indice]) {
+				case "deal":
+					if(is_int($attaque_desc[$indice+2]))
+					{
+						$dmg = $attaque_desc[$indice+2];
+					}
+					else
+					{
+						$dmg = explode('-',$attaque_desc[$indice+2]);
+					}
+					$nbr_hit = $attaque_desc[$indice+1];
+					$attaque_perfo = $attaque_desc[$indice+3];
+					$indice+=3;
+					break;
+				// case "take":
+				// 	$dmg_amp+= $attaque_desc[$indice+1]; 
+				// 	$indice+=2;
+				// 	break;
+				default:
+					$indice++;
+					break;
+			}
+			break;
+		}
+	}
 
-$result = mysqli_query($mysqli,$query );
 
-$attaque_stats = [];
-while ($row = mysqli_fetch_assoc($result)) {
-	$attaque_stats = $row;
+	$result_perfo = mysqli_query($mysqli,"SELECT per_perfo FROM atk_perforation WHERE nom='".$attaque_perfo."'" );
+	$array_perfo = mysqli_fetch_array($result_perfo);
+	$attaque_perfo = $array_perfo['per_perfo'];
 }
 
 //on recupere les items de l'attaquant
@@ -111,8 +176,8 @@ for ($i = 2; $i >= 0; $i--)
 	
 
 // parser de buffs
-$nbr_hit = $attaque_stats['nbr_hit_'.$attack_type]+0;
-$dmg = $data_perso_atk[2];
+
+
 $dmg_amp = 0;
 $multiplicateur = 1;
 
@@ -135,7 +200,7 @@ if($buffs != null)
 		$attaque_desc = explode(' ',$attaque_desc);
 		$taille_attaque = count($attaque_desc);
 		for($indice = 0; $indice < $taille_attaque; $indice++) {
-			if($attaque_desc[$indice] != 'allperso' && $attaque_desc[$indice] != $data_perso_atk[4])
+			if($attaque_desc[$indice] != 'allperso' && $attaque_desc[$indice] != $data_perso_atk[4] && $attaque_desc[$indice] != $alliance && !(in_array($attaque_desc[$indice],$traits)))
 			{
 
 				while($attaque_desc[$indice] != ',' && $indice < $taille_attaque)
@@ -166,7 +231,16 @@ if($buffs != null)
 					$indice+=2;
 					break;
 				case "deal":
-					$dmg+= $attaque_desc[$indice+1]+0; 
+					if(is_array($dmg))
+					{
+						foreach ($dmg as &$value) {
+							$value += $attaque_desc[$indice+1]+0;
+						}
+					}
+					else
+					{
+						$dmg  += $attaque_desc[$indice+1]+0;
+					}
 					$indice+=2;
 					break;
 				case "take":
@@ -202,10 +276,15 @@ for ($i = 0; $i <= $nbr_hit; $i++) {
 
 		// ./DoesItKill.py dmg nbr_hit per vie armor nbr_crit = 0 c_crit=0 d_crit=0 nbr_bloc=0 c_bloc = 0 v_bloc = 0 d_ampli = 0 multi = 1
 		// ./DoesItKill.py 30 2 0.3 200 20 1 0.25 12	
-
-		// echo 'DoesItKill.py '.$dmg.' '.$nbr_hit.' '.$attaque_stats['per_perfo'].' '.$hp.' '.$armor.' '.$nbr_of_crit.' '.$crit_chance.' '.$crit_value.' '.$nbr_of_block.' '.$block_chance.' '.$block_value.' '.$dmg_amp.' '.$multiplicateur;
+		if(is_array($dmg))
+		{
+			$dmg = json_encode($dmg);
+		}
+		
+		$commande = './../DoesItKill.py '.$dmg.' '.$nbr_hit.' '.$attaque_perfo.' '.$hp.' '.$armor.' '.$nbr_of_crit.' '.$crit_chance.' '.$crit_value.' '.$nbr_of_block.' '.$block_chance.' '.$block_value.' '.$dmg_amp.' '.$multiplicateur;
+		// echo $commande."\n";s
 		// exit;
-		$retour_string = shell_exec('./../DoesItKill.py '.$dmg.' '.$nbr_hit.' '.$attaque_stats['per_perfo'].' '.$hp.' '.$armor.' '.$nbr_of_crit.' '.$crit_chance.' '.$crit_value.' '.$nbr_of_block.' '.$block_chance.' '.$block_value.' '.$dmg_amp.' '.$multiplicateur);
+		$retour_string = shell_exec($commande);
 		// { "tdmg" : [0,0,0] , "proba" : 0 }
 		// echo $retour_string;
 		$python_array = json_decode($retour_string, true);
